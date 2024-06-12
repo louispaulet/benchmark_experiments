@@ -1,4 +1,6 @@
-# Repetitive sums benchmark
+# Repetitive sums benchmark  
+
+How well do LLMs fare on a 1+1+...+1 sum?  
 
 Below is the current leaderboard.  
 Skip to the end to see the benchmark and leaderboard datasets on HuggingFace Hub, and method explanation.  
@@ -42,18 +44,38 @@ Skip to the end to see the benchmark and leaderboard datasets on HuggingFace Hub
 | 29| WizardLM/WizardLM-13B-V1.2            | 7.07070707070707   | 31.67391304347826  | 29.5           | 23.960181572837556 | 1           | 80          | 0                       |
 
 ## Benchmark dataset  
-[Repetitive Sums Benchmark Dataset](https://huggingface.co/datasets/the-french-artist/repetitive_sums_benchmark_leaderboard/viewer/default/train)
+Link to the dataset on HuggingFace Hub:   
+[Repetitive Sums Benchmark Dataset](https://huggingface.co/datasets/the-french-artist/repetitive_sums_benchmark_leaderboard/viewer/default/train) 
+
+First seven rows:   
+
+| sum                     | result |
+|-------------------------|--------|
+| 1+1                     | 2      |
+| 1+1+1                   | 3      |
+| 1+1+1+1                 | 4      |
+| 1+1+1+1+1               | 5      |
+| 1+1+1+1+1+1             | 6      |
+| 1+1+1+1+1+1+1           | 7      |
+| 1+1+1+1+1+1+1+1         | 8      |
+
+We have 99 rows with two features:  
+* `sum` is a repetitive sum of ones  
+* `result` is the expected result of this sum. Values ranges from 2 to 100.  
 
 ## Leaderboard dataset  
+
+This is where the leaderboard is updated after each notebook is executed.  
 
 [Repetitive Sums Benchmark Leaderboard](https://huggingface.co/datasets/the-french-artist/repetitive_sums_benchmark_leaderboard/viewer/default/train)
 
 ## Notebooks used to populate the leaderboard  
 
-Below are the 3 notebooks used to benchmarks the models:  
+Below are the 4 notebooks used to benchmarks the models:  
 * `benchmark_repetitive_sums_dataset_using_together_ai.ipynb`
 * `benchmark_multiple_openai_models_using_repetitive_sums_dataset_and_few_token_completion_method.ipynb`
 * `benchmark_multiple_google_models_using_repetitive_sums_dataset_and_few_token_completion_method.ipynb`
+* `benchmark_multiple_anthropic_models_using_repetitive_sums_dataset_and_few_token_completion_method.ipynb`
 
 ## Method explanation  
 
