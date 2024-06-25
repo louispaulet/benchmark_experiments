@@ -45,7 +45,7 @@ Skip to the end to see the benchmark and leaderboard datasets on HuggingFace Hub
 
 ## Benchmark dataset  
 Link to the dataset on HuggingFace Hub:   
-[Repetitive Sums Benchmark Dataset](https://huggingface.co/datasets/the-french-artist/repetitive_sums_benchmark_leaderboard/viewer/default/train) 
+[Repetitive Sums Benchmark Dataset](https://huggingface.co/datasets/the-french-artist/repetitive_sums_benchmark)
 
 First seven rows:   
 
