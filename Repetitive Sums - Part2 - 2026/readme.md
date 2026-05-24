@@ -35,8 +35,10 @@ OPENAI_API_KEY=... python3 scripts/benchmark_part2.py --limit 3 --output-dir res
 Website:
 
 ```bash
-cd site
-npm install
-npm run build
-npm run dev
+make up
+make build
+make test
+make deploy
 ```
+
+The site uses hash routing so the deployed GitHub Pages build can serve every page from the static `index.html`.

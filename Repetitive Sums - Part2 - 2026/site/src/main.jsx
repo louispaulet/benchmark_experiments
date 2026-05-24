@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { HashRouter, Navigate, NavLink, Route, Routes } from "react-router-dom";
 import {
   Activity,
   ArrowDownUp,
@@ -18,10 +19,10 @@ import historical from "./data/historical_leaderboard.json";
 import "./styles.css";
 
 const tabs = [
-  { id: "leaderboard", label: "Leaderboard", icon: BarChart3 },
-  { id: "results", label: "Results", icon: Activity },
-  { id: "history", label: "History", icon: Database },
-  { id: "about", label: "About", icon: Info },
+  { path: "/", label: "Leaderboard", icon: BarChart3 },
+  { path: "/results", label: "Results", icon: Activity },
+  { path: "/history", label: "History", icon: Database },
+  { path: "/about", label: "About", icon: Info },
 ];
 
 const fmt = new Intl.NumberFormat("en", { maximumFractionDigits: 2 });
@@ -31,7 +32,6 @@ function pct(value) {
 }
 
 function App() {
-  const [activeTab, setActiveTab] = useState("leaderboard");
   const [selectedModel, setSelectedModel] = useState(leaderboard[0]?.model_name ?? "");
   const [sortHistory, setSortHistory] = useState("accuracy");
   const currentRows = useMemo(
@@ -59,23 +59,23 @@ function App() {
             </div>
           </div>
           <nav className="flex gap-2 overflow-x-auto">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
+            {tabs.map((route) => {
+              const Icon = route.icon;
               return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  title={tab.label}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`inline-flex min-h-10 items-center gap-2 rounded-md border px-3 text-sm font-medium transition ${
-                    activeTab === tab.id
+                <NavLink
+                  key={route.path}
+                  to={route.path}
+                  title={route.label}
+                  end={route.path === "/"}
+                  className={({ isActive }) => `inline-flex min-h-10 items-center gap-2 rounded-md border px-3 text-sm font-medium transition ${
+                    isActive
                       ? "border-steel bg-steel text-white"
                       : "border-slate-200 bg-white text-slate-700 hover:border-steel"
                   }`}
                 >
                   <Icon size={17} />
-                  <span>{tab.label}</span>
-                </button>
+                  <span>{route.label}</span>
+                </NavLink>
               );
             })}
           </nav>
@@ -83,14 +83,16 @@ function App() {
       </header>
 
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {activeTab === "leaderboard" && <Leaderboard selectedModel={selectedModel} setSelectedModel={setSelectedModel} />}
-        {activeTab === "results" && (
-          <Results rows={currentRows} selectedModel={selectedModel} setSelectedModel={setSelectedModel} summary={selectedSummary} />
-        )}
-        {activeTab === "history" && (
-          <History rows={historical} sortHistory={sortHistory} setSortHistory={setSortHistory} />
-        )}
-        {activeTab === "about" && <About />}
+        <Routes>
+          <Route path="/" element={<Leaderboard selectedModel={selectedModel} setSelectedModel={setSelectedModel} />} />
+          <Route
+            path="/results"
+            element={<Results rows={currentRows} selectedModel={selectedModel} setSelectedModel={setSelectedModel} summary={selectedSummary} />}
+          />
+          <Route path="/history" element={<History rows={historical} sortHistory={sortHistory} setSortHistory={setSortHistory} />} />
+          <Route path="/about" element={<About />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </section>
     </main>
   );
@@ -342,4 +344,8 @@ function About() {
   );
 }
 
-createRoot(document.getElementById("root")).render(<App />);
+createRoot(document.getElementById("root")).render(
+  <HashRouter>
+    <App />
+  </HashRouter>,
+);
