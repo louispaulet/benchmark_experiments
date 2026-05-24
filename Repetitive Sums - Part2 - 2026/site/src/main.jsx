@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { HashRouter, Navigate, NavLink, Route, Routes } from "react-router-dom";
+import { HashRouter, Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import {
   Activity,
   ArrowDownUp,
@@ -14,8 +14,10 @@ import {
   XCircle,
 } from "lucide-react";
 import leaderboard from "./data/part2_leaderboard.json";
+import combinedLeaderboard from "./data/combined_leaderboard.json";
 import results from "./data/part2_results.json";
 import historical from "./data/historical_leaderboard.json";
+import historicalDetails from "./data/historical_detailed_results.json";
 import "./styles.css";
 
 const tabs = [
@@ -26,19 +28,25 @@ const tabs = [
 ];
 
 const fmt = new Intl.NumberFormat("en", { maximumFractionDigits: 2 });
+const allResults = [...results, ...historicalDetails];
 
 function pct(value) {
   return `${fmt.format(value)}%`;
 }
 
 function App() {
-  const [selectedModel, setSelectedModel] = useState(leaderboard[0]?.model_name ?? "");
+  const navigate = useNavigate();
+  const [selectedModel, setSelectedModel] = useState(combinedLeaderboard[0]?.model_name ?? "");
   const [sortHistory, setSortHistory] = useState("accuracy");
   const currentRows = useMemo(
-    () => results.filter((row) => row.model === selectedModel).sort((a, b) => a.expected - b.expected),
+    () => allResults.filter((row) => row.model === selectedModel).sort((a, b) => a.expected - b.expected),
     [selectedModel],
   );
-  const selectedSummary = leaderboard.find((row) => row.model_name === selectedModel);
+  const selectedSummary = combinedLeaderboard.find((row) => row.model_name === selectedModel);
+  const openModel = (modelName) => {
+    setSelectedModel(modelName);
+    navigate("/results");
+  };
 
   return (
     <main className="min-h-screen bg-[#f6f8f5] text-ink">
@@ -53,9 +61,9 @@ function App() {
               </p>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
-              <Metric label="Models" value={leaderboard.length} />
-              <Metric label="Rows" value={results.length} />
-              <Metric label="Best" value={pct(Math.max(...leaderboard.map((row) => row.avg_accuracy)))} />
+              <Metric label="Models" value={combinedLeaderboard.length} />
+              <Metric label="Rows" value={allResults.length} />
+              <Metric label="Best" value={pct(Math.max(...combinedLeaderboard.map((row) => row.avg_accuracy)))} />
             </div>
           </div>
           <nav className="flex gap-2 overflow-x-auto">
@@ -84,7 +92,7 @@ function App() {
 
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <Routes>
-          <Route path="/" element={<Leaderboard selectedModel={selectedModel} setSelectedModel={setSelectedModel} />} />
+          <Route path="/" element={<Leaderboard selectedModel={selectedModel} openModel={openModel} />} />
           <Route
             path="/results"
             element={<Results rows={currentRows} selectedModel={selectedModel} setSelectedModel={setSelectedModel} summary={selectedSummary} />}
@@ -107,14 +115,14 @@ function Metric({ label, value }) {
   );
 }
 
-function Leaderboard({ selectedModel, setSelectedModel }) {
+function Leaderboard({ selectedModel, openModel }) {
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
+      <div className="grid gap-4 lg:grid-cols-[1.5fr_0.5fr]">
         <section className="overflow-hidden rounded-md border border-slate-200 bg-white">
           <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-3">
             <ArrowDownUp size={18} className="text-steel" />
-            <h2 className="text-base font-semibold">Current Leaderboard</h2>
+            <h2 className="text-base font-semibold">Combined Leaderboard</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
@@ -126,13 +134,15 @@ function Leaderboard({ selectedModel, setSelectedModel }) {
                   <th className="px-4 py-3">Mean Error</th>
                   <th className="px-4 py-3">Failures</th>
                   <th className="px-4 py-3">Evaluated</th>
+                  <th className="px-4 py-3">Benchmark</th>
+                  <th className="px-4 py-3">Detail</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {leaderboard.map((row, index) => (
+                {combinedLeaderboard.map((row, index) => (
                   <tr
                     key={row.model_name}
-                    onClick={() => setSelectedModel(row.model_name)}
+                    onClick={() => openModel(row.model_name)}
                     className={`cursor-pointer transition hover:bg-mist ${selectedModel === row.model_name ? "bg-[#edf5ee]" : ""}`}
                   >
                     <td className="px-4 py-3 font-semibold">{index + 1}</td>
@@ -141,6 +151,12 @@ function Leaderboard({ selectedModel, setSelectedModel }) {
                     <td className="px-4 py-3">{fmt.format(row.error_mean)}</td>
                     <td className="px-4 py-3">{row.parsing_failure_count}</td>
                     <td className="px-4 py-3">{row.evaluated_count}</td>
+                    <td className="px-4 py-3 text-slate-600">{row.benchmark}</td>
+                    <td className="px-4 py-3">
+                      <span className={`rounded-sm px-2 py-1 text-xs font-semibold ${row.has_detail ? "bg-[#dcedd6] text-[#24552b]" : "bg-slate-100 text-slate-500"}`}>
+                        {row.has_detail ? "rows" : "summary"}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -149,8 +165,8 @@ function Leaderboard({ selectedModel, setSelectedModel }) {
         </section>
         <section className="rounded-md border border-slate-200 bg-white p-4">
           <h2 className="text-base font-semibold">Accuracy Spread</h2>
-          <div className="mt-4 space-y-4">
-            {leaderboard.map((row) => (
+          <div className="mt-4 max-h-[760px] space-y-4 overflow-auto pr-1">
+            {combinedLeaderboard.map((row) => (
               <div key={row.model_name}>
                 <div className="mb-1 flex justify-between text-sm">
                   <span>{row.model_name}</span>
@@ -170,6 +186,8 @@ function Leaderboard({ selectedModel, setSelectedModel }) {
 
 function Results({ rows, selectedModel, setSelectedModel, summary }) {
   const failures = rows.filter((row) => !row.is_correct);
+  const isHistorical = summary?.benchmark?.startsWith("Original");
+  const hasRows = rows.length > 0;
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -184,8 +202,10 @@ function Results({ rows, selectedModel, setSelectedModel, summary }) {
             onChange={(event) => setSelectedModel(event.target.value)}
             className="rounded-md border border-slate-300 bg-white px-3 py-2"
           >
-            {leaderboard.map((row) => (
-              <option key={row.model_name} value={row.model_name}>{row.model_name}</option>
+            {combinedLeaderboard.map((row) => (
+              <option key={row.model_name} value={row.model_name}>
+                {row.model_name}{row.has_detail ? "" : " (summary only)"}
+              </option>
             ))}
           </select>
         </label>
@@ -193,12 +213,25 @@ function Results({ rows, selectedModel, setSelectedModel, summary }) {
 
       <div className="grid gap-4 sm:grid-cols-4">
         <Metric label="Accuracy" value={summary ? pct(summary.avg_accuracy) : "0%"} />
-        <Metric label="Correct" value={rows.filter((row) => row.is_correct).length} />
-        <Metric label="Wrong" value={failures.length} />
+        <Metric label="Correct" value={hasRows ? rows.filter((row) => row.is_correct).length : "n/a"} />
+        <Metric label="Wrong" value={hasRows ? failures.length : "n/a"} />
         <Metric label="Parse Fails" value={summary?.parsing_failure_count ?? 0} />
       </div>
 
-      <section className="rounded-md border border-slate-200 bg-white p-4">
+      {summary && (
+        <section className="rounded-md border border-slate-200 bg-white p-4">
+          <h3 className="text-base font-semibold">{summary.benchmark}</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            {hasRows
+              ? isHistorical
+                ? "Historical row-level answers are available for this model. Logprob columns are empty because the original dataset stored parsed answers, not token probabilities."
+                : "Part 2 row-level answers include Responses API token logprobs and top token alternatives."
+              : "Only the historical leaderboard summary is available for this model; the original row-level answer table was not published for it."}
+          </p>
+        </section>
+      )}
+
+      {hasRows && <section className="rounded-md border border-slate-200 bg-white p-4">
         <h3 className="text-base font-semibold">Correctness By Expected Result</h3>
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(2.25rem,1fr))] gap-1">
           {rows.map((row) => (
@@ -213,11 +246,11 @@ function Results({ rows, selectedModel, setSelectedModel, summary }) {
             </div>
           ))}
         </div>
-      </section>
+      </section>}
 
-      <section className="overflow-hidden rounded-md border border-slate-200 bg-white">
+      {hasRows && <section className="overflow-hidden rounded-md border border-slate-200 bg-white">
         <div className="border-b border-slate-200 px-4 py-3">
-          <h3 className="text-base font-semibold">Row-Level Logprob Results</h3>
+          <h3 className="text-base font-semibold">{isHistorical ? "Row-Level Historical Results" : "Row-Level Logprob Results"}</h3>
         </div>
         <div className="max-h-[620px] overflow-auto">
           <table className="min-w-full text-left text-sm">
@@ -243,15 +276,15 @@ function Results({ rows, selectedModel, setSelectedModel, summary }) {
                       <span className="inline-flex items-center gap-1 text-coral"><XCircle size={16} /> Miss</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs">{row.token_logprobs.map((value) => fmt.format(value)).join(", ")}</td>
+                  <td className="px-4 py-3 font-mono text-xs">{row.token_logprobs.length ? row.token_logprobs.map((value) => fmt.format(value)).join(", ") : "n/a"}</td>
                   <td className="px-4 py-3 font-mono text-xs">{topTokenLabel(row)}</td>
-                  <td className="px-4 py-3">{fmt.format(row.latency_ms)} ms</td>
+                  <td className="px-4 py-3">{row.latency_ms === null ? "n/a" : `${fmt.format(row.latency_ms)} ms`}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </section>
+      </section>}
     </div>
   );
 }
