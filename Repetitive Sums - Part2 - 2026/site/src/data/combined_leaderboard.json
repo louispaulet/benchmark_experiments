@@ -51,6 +51,9 @@
     "error_max": 4,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-03-04",
+    "date_source": "Anthropic Claude 3 family announcement; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -65,6 +68,9 @@
     "error_max": 12,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-05-13",
+    "date_source": "OpenAI model date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -79,6 +85,9 @@
     "error_max": 34,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-01-25",
+    "date_source": "OpenAI model date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -93,6 +102,9 @@
     "error_max": 33,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-03-13",
+    "date_source": "Anthropic Claude 3 Haiku announcement; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -107,6 +119,9 @@
     "error_max": 42,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-05-14",
+    "date_source": "Google I/O Gemini 1.5 Flash announcement; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -121,6 +136,9 @@
     "error_max": 41,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-04-09",
+    "date_source": "OpenAI model date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -135,6 +153,9 @@
     "error_max": 42,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2023-11-06",
+    "date_source": "OpenAI model date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -149,6 +170,9 @@
     "error_max": 30,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2023-06-13",
+    "date_source": "OpenAI model date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -163,6 +187,9 @@
     "error_max": 30,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-03-04",
+    "date_source": "Anthropic Claude 3 family announcement; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -177,6 +204,9 @@
     "error_max": 43,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-04-17",
+    "date_source": "Mistral Mixtral 8x22B announcement; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 22
@@ -191,6 +221,9 @@
     "error_max": 43,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-04-17",
+    "date_source": "Mistral Mixtral 8x22B announcement; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 20
@@ -205,6 +238,9 @@
     "error_max": 273,
     "parsing_failure_count": 6,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2023-12-13",
+    "date_source": "Gemini Pro API availability date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -219,6 +255,9 @@
     "error_max": 28,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-02-15",
+    "date_source": "Google Gemini 1.5 announcement; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -233,6 +272,9 @@
     "error_max": 38,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-04-15",
+    "date_source": "WizardLM-2 public release period; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 20
@@ -247,6 +289,9 @@
     "error_max": 54,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-05-28",
+    "date_source": "Hugging Face model repository created date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 17
@@ -261,6 +306,9 @@
     "error_max": 20,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-01-25",
+    "date_source": "OpenAI model date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -275,6 +323,9 @@
     "error_max": 26,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-04-18",
+    "date_source": "Meta Llama 3 announcement; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 12
@@ -289,6 +340,9 @@
     "error_max": 36,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-04-03",
+    "date_source": "Hugging Face model repository created date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 17
@@ -303,6 +357,9 @@
     "error_max": 40,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-01-30",
+    "date_source": "Hugging Face model repository created date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 18
@@ -317,6 +374,9 @@
     "error_max": 69,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-04-18",
+    "date_source": "Meta Llama 3 announcement; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 15
@@ -331,6 +391,9 @@
     "error_max": 23,
     "parsing_failure_count": 5,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2023-11-06",
+    "date_source": "OpenAI model date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": false,
     "longest_correct_streak": null
@@ -345,6 +408,9 @@
     "error_max": 340,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2023-11-02",
+    "date_source": "Yi model family initial release date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 13
@@ -359,6 +425,9 @@
     "error_max": 69,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-05-22",
+    "date_source": "Mistral model governance release date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 12
@@ -373,6 +442,9 @@
     "error_max": 60,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-01-30",
+    "date_source": "Hugging Face model repository created date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 11
@@ -387,6 +459,9 @@
     "error_max": 99,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-02-21",
+    "date_source": "Google Gemma release page; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 12
@@ -401,6 +476,9 @@
     "error_max": 79,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2023-12-23",
+    "date_source": "Hugging Face model repository created date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 9
@@ -415,6 +493,9 @@
     "error_max": 74,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2023-12-11",
+    "date_source": "Hugging Face model repository created date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 7
@@ -429,6 +510,9 @@
     "error_max": 78,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-01-30",
+    "date_source": "Hugging Face model repository created date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 10
@@ -443,6 +527,9 @@
     "error_max": 78,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-02-21",
+    "date_source": "Google Gemma release page; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 12
@@ -457,6 +544,9 @@
     "error_max": 84,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2023-09-27",
+    "date_source": "Mistral model governance release date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 9
@@ -471,6 +561,9 @@
     "error_max": 80,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-02-21",
+    "date_source": "Google Gemma release page; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 6
@@ -485,6 +578,9 @@
     "error_max": 89,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2024-02-21",
+    "date_source": "Google Gemma release page; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 7
@@ -499,6 +595,9 @@
     "error_max": 80,
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
+    "test_date": "2024-06-12",
+    "release_date": "2023-07-25",
+    "date_source": "Hugging Face model repository created date; benchmark leaderboard upload date",
     "evaluated_count": 99,
     "has_detail": true,
     "longest_correct_streak": 6

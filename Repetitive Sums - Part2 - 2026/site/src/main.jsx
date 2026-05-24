@@ -16,6 +16,7 @@ import {
 import combinedLeaderboard from "./data/combined_leaderboard.json";
 import results from "./data/part2_results.json";
 import historicalDetails from "./data/historical_detailed_results.json";
+import historicalModelDates from "./data/historical_model_dates.json";
 import "./styles.css";
 
 const tabs = [
@@ -34,6 +35,10 @@ function pct(value) {
 
 function streak(value) {
   return value === null || value === undefined ? "n/a" : value;
+}
+
+function dateValue(value) {
+  return value || "n/a";
 }
 
 function App() {
@@ -314,6 +319,8 @@ function History({ rows, sortHistory, setSortHistory }) {
     if (sortHistory === "accuracy") return b.avg_accuracy - a.avg_accuracy;
     if (sortHistory === "error") return a.error_mean - b.error_mean;
     if (sortHistory === "streak") return (b.longest_correct_streak ?? -1) - (a.longest_correct_streak ?? -1);
+    if (sortHistory === "test_date") return dateValue(b.test_date).localeCompare(dateValue(a.test_date));
+    if (sortHistory === "release_date") return dateValue(b.release_date).localeCompare(dateValue(a.release_date));
     return a.model_name.localeCompare(b.model_name);
   });
   return (
@@ -332,6 +339,8 @@ function History({ rows, sortHistory, setSortHistory }) {
           >
             <option value="accuracy">Accuracy</option>
             <option value="streak">Longest streak</option>
+            <option value="test_date">Test date</option>
+            <option value="release_date">Release date</option>
             <option value="error">Mean error</option>
             <option value="model">Model</option>
           </select>
@@ -343,6 +352,8 @@ function History({ rows, sortHistory, setSortHistory }) {
             <thead className="bg-slate-50 text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-4 py-3">Model</th>
+                <th className="px-4 py-3">Test Date</th>
+                <th className="px-4 py-3">Release Date</th>
                 <th className="px-4 py-3">Accuracy</th>
                 <th className="px-4 py-3">Mean Error</th>
                 <th className="px-4 py-3">Longest Streak</th>
@@ -355,7 +366,9 @@ function History({ rows, sortHistory, setSortHistory }) {
             <tbody className="divide-y divide-slate-100">
               {sorted.map((row) => (
                 <tr key={row.model_name}>
-                  <td className="px-4 py-3 font-medium">{row.model_name}</td>
+                  <td className="px-4 py-3 font-medium" title={row.date_source || ""}>{row.model_name}</td>
+                  <td className="px-4 py-3">{dateValue(row.test_date)}</td>
+                  <td className="px-4 py-3">{dateValue(row.release_date)}</td>
                   <td className="px-4 py-3">{pct(row.avg_accuracy)}</td>
                   <td className="px-4 py-3">{fmt.format(row.error_mean)}</td>
                   <td className="px-4 py-3">{streak(row.longest_correct_streak)}</td>
@@ -374,23 +387,63 @@ function History({ rows, sortHistory, setSortHistory }) {
 }
 
 function About() {
+  const part2Count = combinedLeaderboard.filter((row) => row.benchmark === "Part 2 - 2026").length;
+  const originalCount = combinedLeaderboard.filter((row) => row.benchmark?.startsWith("Original")).length;
+  const detailCount = combinedLeaderboard.filter((row) => row.has_detail).length;
+  const summaryOnlyCount = combinedLeaderboard.length - detailCount;
+  const datedHistoryCount = Object.keys(historicalModelDates).length;
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">
+    <div className="space-y-6">
       <section className="rounded-md border border-slate-200 bg-white p-5">
-        <BookOpen className="text-steel" />
-        <h2 className="mt-3 text-xl font-semibold">About The Benchmark</h2>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
-          The dataset contains 99 prompts made from repeated additions of one, with expected answers from 2 through 100.
-          Part 2 evaluates three OpenAI models through the Responses API and records token-level logprob data for each answer.
-        </p>
+        <div className="flex items-start gap-3">
+          <BookOpen className="mt-1 text-steel" />
+          <div>
+            <h2 className="text-xl font-semibold">About The Benchmark Collection</h2>
+            <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-600">
+              This app presents the Repetitive Sums benchmark across the new Part 2 run and the original benchmark archive.
+              Every benchmark asks models to answer repeated additions of one, with expected answers from 2 through 100.
+              The combined leaderboard ranks all models together while preserving which benchmark each row came from.
+            </p>
+          </div>
+        </div>
       </section>
+
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Metric label="Total Models" value={combinedLeaderboard.length} />
+        <Metric label="Part 2 Models" value={part2Count} />
+        <Metric label="Original Models" value={originalCount} />
+        <Metric label="With Row Detail" value={detailCount} />
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-md border border-slate-200 bg-white p-5">
+          <h3 className="text-base font-semibold">Part 2 - 2026</h3>
+          <div className="mt-3 space-y-3 text-sm leading-6 text-slate-600">
+            <p>Models: gpt-5.4-mini, gpt-5.4, and gpt-5.5. The pro variant is intentionally excluded.</p>
+            <p>Endpoint: OpenAI Responses API with output text logprobs included and top token alternatives captured.</p>
+            <p>Detail: all 99 row-level answers are stored for every Part 2 model, including parsed answer, correctness, latency, token logprobs, and top-token alternatives.</p>
+          </div>
+        </div>
+
+        <div className="rounded-md border border-slate-200 bg-white p-5">
+          <h3 className="text-base font-semibold">Original Benchmark Archive</h3>
+          <div className="mt-3 space-y-3 text-sm leading-6 text-slate-600">
+            <p>The archive contributes {originalCount} previous leaderboard rows from the original Repetitive Sums benchmark.</p>
+            <p>{detailCount - part2Count} archived models include row-level historical answers from the published results dataset.</p>
+            <p>{summaryOnlyCount} archived models are shown as leaderboard summaries only because row-level answer tables were not published for them.</p>
+            <p>History includes test and release dates for {datedHistoryCount} archived models; hover a model name in the History table for the date source note.</p>
+          </div>
+        </div>
+      </section>
+
       <section className="rounded-md border border-slate-200 bg-white p-5">
-        <h3 className="text-base font-semibold">Method</h3>
+        <h3 className="text-base font-semibold">Metrics Shown</h3>
         <div className="mt-3 grid gap-3 text-sm leading-6 text-slate-600 sm:grid-cols-2">
-          <p>Models: gpt-5.4-mini, gpt-5.4, and gpt-5.5. The pro variant is intentionally excluded.</p>
-          <p>Endpoint: OpenAI Responses API with output text logprobs included and top token alternatives captured.</p>
-          <p>Scoring: parse the first integer in the model output, compare it to the expected sum length, and compute accuracy plus absolute error stats.</p>
-          <p>History: previous leaderboard rows are extracted into a separate static data file, while old execution artifacts are not reused as Part 2 results.</p>
+          <p>Accuracy is the percent of rows where the parsed integer answer equals the expected count of ones.</p>
+          <p>Error metrics are computed from absolute answer distance for wrong, parseable answers.</p>
+          <p>Longest streak is the longest consecutive run of correct answers when results are ordered from 2 through 100.</p>
+          <p>Parsing failures count rows where no integer answer could be extracted; summary-only rows show unavailable row-level metrics as n/a.</p>
         </div>
       </section>
     </div>

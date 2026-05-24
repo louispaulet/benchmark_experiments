@@ -19,6 +19,7 @@ This folder is a clean Part 2 copy of the original repetitive sums benchmark. Le
 - `results/part2_leaderboard.csv` and `results/part2_leaderboard.json` store the new leaderboard.
 - `results/combined_leaderboard.json` stores Part 2 plus the 33 previous leaderboard rows, including longest correct streak where row-level data exists.
 - `results/historical_detailed_results.json` stores row-level answers for previous models where the original public dataset contains them.
+- `results/historical_model_dates.json` stores test and release dates for archived models, with source notes.
 - `results/charts/*.svg` contains Part 2 correctness charts only.
 - `site/` contains the Vite + React + Tailwind website.
 

@@ -60,6 +60,7 @@ def combined_leaderboard(root: Path) -> list[dict[str, Any]]:
     current = json.loads((root / "results" / "part2_leaderboard.json").read_text())
     historical = json.loads((root / "results" / "historical_leaderboard.json").read_text())
     detailed_rows = json.loads((root / "results" / "historical_detailed_results.json").read_text())
+    historical_dates = json.loads((root / "results" / "historical_model_dates.json").read_text())
     detailed_streaks = {
         model: longest_correct_streak([row for row in detailed_rows if row["model"] == model])
         for model in {row["model"] for row in detailed_rows}
@@ -75,6 +76,7 @@ def combined_leaderboard(root: Path) -> list[dict[str, Any]]:
         row = {k: v for k, v in row.items() if k != "rank"}
         combined.append({
             **row,
+            **historical_dates.get(row["model_name"], {}),
             "evaluated_count": 99,
             "has_detail": False,
             "longest_correct_streak": None,
