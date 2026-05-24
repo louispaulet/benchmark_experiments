@@ -59,6 +59,11 @@ def normalize(payload: dict[str, Any]) -> list[dict[str, Any]]:
 def combined_leaderboard(root: Path) -> list[dict[str, Any]]:
     current = json.loads((root / "results" / "part2_leaderboard.json").read_text())
     historical = json.loads((root / "results" / "historical_leaderboard.json").read_text())
+    detailed_rows = json.loads((root / "results" / "historical_detailed_results.json").read_text())
+    detailed_streaks = {
+        model: longest_correct_streak([row for row in detailed_rows if row["model"] == model])
+        for model in {row["model"] for row in detailed_rows}
+    }
     combined = []
     for row in current:
         combined.append({
@@ -72,12 +77,25 @@ def combined_leaderboard(root: Path) -> list[dict[str, Any]]:
             **row,
             "evaluated_count": 99,
             "has_detail": False,
+            "longest_correct_streak": None,
         })
-    detailed_models = {row["model"] for row in json.loads((root / "results" / "historical_detailed_results.json").read_text())}
     for row in combined:
-        if row["model_name"] in detailed_models:
+        if row["model_name"] in detailed_streaks:
             row["has_detail"] = True
+            row["longest_correct_streak"] = detailed_streaks[row["model_name"]]
     return sorted(combined, key=lambda row: row["avg_accuracy"], reverse=True)
+
+
+def longest_correct_streak(rows: list[dict[str, Any]]) -> int:
+    streak = 0
+    best = 0
+    for row in sorted(rows, key=lambda item: int(item["expected"])):
+        if row.get("is_correct"):
+            streak += 1
+            best = max(best, streak)
+        else:
+            streak = 0
+    return best
 
 
 def main() -> int:

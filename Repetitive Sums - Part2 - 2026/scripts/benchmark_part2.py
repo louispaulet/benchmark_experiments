@@ -194,8 +194,21 @@ def summarize(results: list[dict[str, Any]], models: Iterable[str]) -> list[dict
             "error_max": max(wrong_errors) if wrong_errors else 0,
             "parsing_failure_count": parsing_failures,
             "evaluated_count": evaluated,
+            "longest_correct_streak": longest_correct_streak(rows),
         })
     return sorted(summary, key=lambda row: row["avg_accuracy"], reverse=True)
+
+
+def longest_correct_streak(rows: list[dict[str, Any]]) -> int:
+    streak = 0
+    best = 0
+    for row in sorted(rows, key=lambda item: int(item["expected"])):
+        if row.get("is_correct"):
+            streak += 1
+            best = max(best, streak)
+        else:
+            streak = 0
+    return best
 
 
 def write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str]) -> None:
@@ -244,7 +257,7 @@ def write_outputs(output_dir: Path, results: list[dict[str, Any]], models: Itera
     write_csv(
         output_dir / "part2_leaderboard.csv",
         leaderboard,
-        ["model_name", "avg_accuracy", "error_mean", "error_median", "error_std", "error_min", "error_max", "parsing_failure_count", "evaluated_count"],
+        ["model_name", "avg_accuracy", "error_mean", "error_median", "error_std", "error_min", "error_max", "parsing_failure_count", "evaluated_count", "longest_correct_streak"],
     )
     chart_dir = output_dir / "charts"
     chart_dir.mkdir(exist_ok=True)

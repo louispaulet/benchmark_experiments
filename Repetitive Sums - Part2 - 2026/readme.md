@@ -4,11 +4,11 @@ This folder is a clean Part 2 copy of the original repetitive sums benchmark. Le
 
 ## Current Leaderboard
 
-| Rank | Model | Accuracy | Mean Error | Parsing Failures | Evaluated |
-|---:|---|---:|---:|---:|---:|
-| 1 | gpt-5.4 | 100.00% | 0.00 | 0 | 99 |
-| 2 | gpt-5.5 | 100.00% | 0.00 | 0 | 99 |
-| 3 | gpt-5.4-mini | 87.88% | 1.33 | 0 | 99 |
+| Rank | Model | Accuracy | Mean Error | Longest Streak | Parsing Failures | Evaluated |
+|---:|---|---:|---:|---:|---:|---:|
+| 1 | gpt-5.4 | 100.00% | 0.00 | 99 | 0 | 99 |
+| 2 | gpt-5.5 | 100.00% | 0.00 | 99 | 0 | 99 |
+| 3 | gpt-5.4-mini | 87.88% | 1.33 | 56 | 0 | 99 |
 
 ## Artifacts
 
@@ -17,7 +17,7 @@ This folder is a clean Part 2 copy of the original repetitive sums benchmark. Le
 - `results/part2_raw_results.jsonl` stores row-level raw benchmark records.
 - `results/part2_results.csv` and `results/part2_results.json` store row-level static results.
 - `results/part2_leaderboard.csv` and `results/part2_leaderboard.json` store the new leaderboard.
-- `results/combined_leaderboard.json` stores Part 2 plus the 33 previous leaderboard rows.
+- `results/combined_leaderboard.json` stores Part 2 plus the 33 previous leaderboard rows, including longest correct streak where row-level data exists.
 - `results/historical_detailed_results.json` stores row-level answers for previous models where the original public dataset contains them.
 - `results/charts/*.svg` contains Part 2 correctness charts only.
 - `site/` contains the Vite + React + Tailwind website.

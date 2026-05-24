@@ -13,10 +13,8 @@ import {
   ListFilter,
   XCircle,
 } from "lucide-react";
-import leaderboard from "./data/part2_leaderboard.json";
 import combinedLeaderboard from "./data/combined_leaderboard.json";
 import results from "./data/part2_results.json";
-import historical from "./data/historical_leaderboard.json";
 import historicalDetails from "./data/historical_detailed_results.json";
 import "./styles.css";
 
@@ -32,6 +30,10 @@ const allResults = [...results, ...historicalDetails];
 
 function pct(value) {
   return `${fmt.format(value)}%`;
+}
+
+function streak(value) {
+  return value === null || value === undefined ? "n/a" : value;
 }
 
 function App() {
@@ -97,7 +99,16 @@ function App() {
             path="/results"
             element={<Results rows={currentRows} selectedModel={selectedModel} setSelectedModel={setSelectedModel} summary={selectedSummary} />}
           />
-          <Route path="/history" element={<History rows={historical} sortHistory={sortHistory} setSortHistory={setSortHistory} />} />
+          <Route
+            path="/history"
+            element={
+              <History
+                rows={combinedLeaderboard.filter((row) => row.benchmark?.startsWith("Original"))}
+                sortHistory={sortHistory}
+                setSortHistory={setSortHistory}
+              />
+            }
+          />
           <Route path="/about" element={<About />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -132,6 +143,7 @@ function Leaderboard({ selectedModel, openModel }) {
                   <th className="px-4 py-3">Model</th>
                   <th className="px-4 py-3">Accuracy</th>
                   <th className="px-4 py-3">Mean Error</th>
+                  <th className="px-4 py-3">Longest Streak</th>
                   <th className="px-4 py-3">Failures</th>
                   <th className="px-4 py-3">Evaluated</th>
                   <th className="px-4 py-3">Benchmark</th>
@@ -149,6 +161,7 @@ function Leaderboard({ selectedModel, openModel }) {
                     <td className="px-4 py-3 font-medium">{row.model_name}</td>
                     <td className="px-4 py-3">{pct(row.avg_accuracy)}</td>
                     <td className="px-4 py-3">{fmt.format(row.error_mean)}</td>
+                    <td className="px-4 py-3">{streak(row.longest_correct_streak)}</td>
                     <td className="px-4 py-3">{row.parsing_failure_count}</td>
                     <td className="px-4 py-3">{row.evaluated_count}</td>
                     <td className="px-4 py-3 text-slate-600">{row.benchmark}</td>
@@ -211,10 +224,11 @@ function Results({ rows, selectedModel, setSelectedModel, summary }) {
         </label>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-5">
         <Metric label="Accuracy" value={summary ? pct(summary.avg_accuracy) : "0%"} />
         <Metric label="Correct" value={hasRows ? rows.filter((row) => row.is_correct).length : "n/a"} />
         <Metric label="Wrong" value={hasRows ? failures.length : "n/a"} />
+        <Metric label="Longest Streak" value={streak(summary?.longest_correct_streak)} />
         <Metric label="Parse Fails" value={summary?.parsing_failure_count ?? 0} />
       </div>
 
@@ -299,6 +313,7 @@ function History({ rows, sortHistory, setSortHistory }) {
   const sorted = [...rows].sort((a, b) => {
     if (sortHistory === "accuracy") return b.avg_accuracy - a.avg_accuracy;
     if (sortHistory === "error") return a.error_mean - b.error_mean;
+    if (sortHistory === "streak") return (b.longest_correct_streak ?? -1) - (a.longest_correct_streak ?? -1);
     return a.model_name.localeCompare(b.model_name);
   });
   return (
@@ -316,6 +331,7 @@ function History({ rows, sortHistory, setSortHistory }) {
             className="rounded-md border border-slate-300 bg-white px-3 py-2"
           >
             <option value="accuracy">Accuracy</option>
+            <option value="streak">Longest streak</option>
             <option value="error">Mean error</option>
             <option value="model">Model</option>
           </select>
@@ -329,9 +345,11 @@ function History({ rows, sortHistory, setSortHistory }) {
                 <th className="px-4 py-3">Model</th>
                 <th className="px-4 py-3">Accuracy</th>
                 <th className="px-4 py-3">Mean Error</th>
+                <th className="px-4 py-3">Longest Streak</th>
                 <th className="px-4 py-3">Median Error</th>
                 <th className="px-4 py-3">Max Error</th>
                 <th className="px-4 py-3">Failures</th>
+                <th className="px-4 py-3">Detail</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -340,9 +358,11 @@ function History({ rows, sortHistory, setSortHistory }) {
                   <td className="px-4 py-3 font-medium">{row.model_name}</td>
                   <td className="px-4 py-3">{pct(row.avg_accuracy)}</td>
                   <td className="px-4 py-3">{fmt.format(row.error_mean)}</td>
+                  <td className="px-4 py-3">{streak(row.longest_correct_streak)}</td>
                   <td className="px-4 py-3">{fmt.format(row.error_median)}</td>
                   <td className="px-4 py-3">{row.error_max}</td>
                   <td className="px-4 py-3">{row.parsing_failure_count}</td>
+                  <td className="px-4 py-3">{row.has_detail ? "rows" : "summary"}</td>
                 </tr>
               ))}
             </tbody>

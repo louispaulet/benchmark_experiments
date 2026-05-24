@@ -17,17 +17,20 @@ def test_parse_answer_uses_first_integer():
 def test_summarize_counts_accuracy_and_errors():
     rows = [
         {"model": "m1", "parsed_answer": 2, "expected": 2, "is_correct": True, "error_abs": 0},
-        {"model": "m1", "parsed_answer": 5, "expected": 3, "is_correct": False, "error_abs": 2},
-        {"model": "m1", "parsed_answer": 0, "expected": 4, "is_correct": False, "error_abs": None},
+        {"model": "m1", "parsed_answer": 3, "expected": 3, "is_correct": True, "error_abs": 0},
+        {"model": "m1", "parsed_answer": 7, "expected": 4, "is_correct": False, "error_abs": 3},
+        {"model": "m1", "parsed_answer": 5, "expected": 5, "is_correct": True, "error_abs": 0},
+        {"model": "m1", "parsed_answer": 0, "expected": 6, "is_correct": False, "error_abs": None},
     ]
 
     [summary] = benchmark_part2.summarize(rows, ["m1"])
 
     assert summary["model_name"] == "m1"
-    assert summary["avg_accuracy"] == pytest.approx(100 / 3)
-    assert summary["error_mean"] == 2
+    assert summary["avg_accuracy"] == pytest.approx(60)
+    assert summary["error_mean"] == 3
     assert summary["parsing_failure_count"] == 1
-    assert summary["evaluated_count"] == 3
+    assert summary["evaluated_count"] == 5
+    assert summary["longest_correct_streak"] == 2
 
 
 def test_flatten_logprobs_finds_nested_tokens():

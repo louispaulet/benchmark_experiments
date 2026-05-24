@@ -9,6 +9,7 @@
     "error_max": 0,
     "parsing_failure_count": 0,
     "evaluated_count": 99,
+    "longest_correct_streak": 99,
     "benchmark": "Part 2 - 2026",
     "has_detail": true
   },
@@ -22,6 +23,7 @@
     "error_max": 0,
     "parsing_failure_count": 0,
     "evaluated_count": 99,
+    "longest_correct_streak": 99,
     "benchmark": "Part 2 - 2026",
     "has_detail": true
   },
@@ -35,6 +37,7 @@
     "error_max": 2,
     "parsing_failure_count": 0,
     "evaluated_count": 99,
+    "longest_correct_streak": 56,
     "benchmark": "Part 2 - 2026",
     "has_detail": true
   },
@@ -49,7 +52,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "gpt-4o-2024-05-13",
@@ -62,7 +66,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "gpt-4-0125-preview",
@@ -75,7 +80,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "claude-3-haiku-20240307",
@@ -88,7 +94,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "gemini-1.5-flash",
@@ -101,7 +108,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "gpt-4-turbo-2024-04-09",
@@ -114,7 +122,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "gpt-4-1106-preview",
@@ -127,7 +136,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "gpt-4-0613",
@@ -140,7 +150,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "claude-3-sonnet-20240229",
@@ -153,7 +164,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "mistralai/Mixtral-8x22B",
@@ -166,7 +178,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 22
   },
   {
     "model_name": "mistralai/Mixtral-8x22B-Instruct-v0.1",
@@ -179,7 +192,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 20
   },
   {
     "model_name": "gemini-1.0-pro",
@@ -192,7 +206,8 @@
     "parsing_failure_count": 6,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "gemini-1.5-pro",
@@ -205,7 +220,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "microsoft/WizardLM-2-8x22B",
@@ -218,7 +234,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 20
   },
   {
     "model_name": "Qwen/Qwen2-72B-Instruct",
@@ -231,7 +248,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 17
   },
   {
     "model_name": "gpt-3.5-turbo-0125",
@@ -244,7 +262,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "meta-llama/Llama-3-70b-chat-hf",
@@ -257,7 +276,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 12
   },
   {
     "model_name": "Qwen/Qwen1.5-32B-Chat",
@@ -270,7 +290,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 17
   },
   {
     "model_name": "Qwen/Qwen1.5-72B-Chat",
@@ -283,7 +304,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 18
   },
   {
     "model_name": "meta-llama/Llama-3-8b-chat-hf",
@@ -296,7 +318,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 15
   },
   {
     "model_name": "gpt-3.5-turbo-1106",
@@ -309,7 +332,8 @@
     "parsing_failure_count": 5,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": false
+    "has_detail": false,
+    "longest_correct_streak": null
   },
   {
     "model_name": "zero-one-ai/Yi-34B-Chat",
@@ -322,7 +346,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 13
   },
   {
     "model_name": "mistralai/Mistral-7B-Instruct-v0.3",
@@ -335,7 +360,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 12
   },
   {
     "model_name": "Qwen/Qwen1.5-14B-Chat",
@@ -348,7 +374,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 11
   },
   {
     "model_name": "google/gemma-7b",
@@ -361,7 +388,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 12
   },
   {
     "model_name": "NousResearch/Nous-Hermes-2-Yi-34B",
@@ -374,7 +402,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 9
   },
   {
     "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -387,7 +416,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 7
   },
   {
     "model_name": "Qwen/Qwen1.5-7B-Chat",
@@ -400,7 +430,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 10
   },
   {
     "model_name": "google/gemma-7b-it",
@@ -413,7 +444,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 12
   },
   {
     "model_name": "mistralai/Mistral-7B-Instruct-v0.1",
@@ -426,7 +458,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 9
   },
   {
     "model_name": "google/gemma-2b",
@@ -439,7 +472,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 6
   },
   {
     "model_name": "google/gemma-2b-it",
@@ -452,7 +486,8 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 7
   },
   {
     "model_name": "WizardLM/WizardLM-13B-V1.2",
@@ -465,6 +500,7 @@
     "parsing_failure_count": 0,
     "benchmark": "Original Repetitive Sums Benchmark Dataset",
     "evaluated_count": 99,
-    "has_detail": true
+    "has_detail": true,
+    "longest_correct_streak": 6
   }
 ]
