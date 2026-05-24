@@ -1,0 +1,4 @@
+model_name,avg_accuracy,error_mean,error_median,error_std,error_min,error_max,parsing_failure_count,evaluated_count
+gpt-5.4,100.0,0,0,0,0,0,0,99
+gpt-5.5,100.0,0,0,0,0,0,0,99
+gpt-5.4-mini,87.87878787878788,1.3333333333333333,1.0,0.49236596391733095,1,2,0,99

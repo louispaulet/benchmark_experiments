@@ -1,0 +1,35 @@
+[
+  {
+    "model_name": "gpt-5.4",
+    "avg_accuracy": 100.0,
+    "error_mean": 0,
+    "error_median": 0,
+    "error_std": 0,
+    "error_min": 0,
+    "error_max": 0,
+    "parsing_failure_count": 0,
+    "evaluated_count": 99
+  },
+  {
+    "model_name": "gpt-5.5",
+    "avg_accuracy": 100.0,
+    "error_mean": 0,
+    "error_median": 0,
+    "error_std": 0,
+    "error_min": 0,
+    "error_max": 0,
+    "parsing_failure_count": 0,
+    "evaluated_count": 99
+  },
+  {
+    "model_name": "gpt-5.4-mini",
+    "avg_accuracy": 87.87878787878788,
+    "error_mean": 1.3333333333333333,
+    "error_median": 1.0,
+    "error_std": 0.49236596391733095,
+    "error_min": 1,
+    "error_max": 2,
+    "parsing_failure_count": 0,
+    "evaluated_count": 99
+  }
+]

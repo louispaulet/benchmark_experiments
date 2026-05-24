@@ -1,0 +1,345 @@
+import React, { useMemo, useState } from "react";
+import { createRoot } from "react-dom/client";
+import {
+  Activity,
+  ArrowDownUp,
+  BarChart3,
+  BookOpen,
+  CheckCircle2,
+  ChevronDown,
+  Database,
+  Info,
+  ListFilter,
+  XCircle,
+} from "lucide-react";
+import leaderboard from "./data/part2_leaderboard.json";
+import results from "./data/part2_results.json";
+import historical from "./data/historical_leaderboard.json";
+import "./styles.css";
+
+const tabs = [
+  { id: "leaderboard", label: "Leaderboard", icon: BarChart3 },
+  { id: "results", label: "Results", icon: Activity },
+  { id: "history", label: "History", icon: Database },
+  { id: "about", label: "About", icon: Info },
+];
+
+const fmt = new Intl.NumberFormat("en", { maximumFractionDigits: 2 });
+
+function pct(value) {
+  return `${fmt.format(value)}%`;
+}
+
+function App() {
+  const [activeTab, setActiveTab] = useState("leaderboard");
+  const [selectedModel, setSelectedModel] = useState(leaderboard[0]?.model_name ?? "");
+  const [sortHistory, setSortHistory] = useState("accuracy");
+  const currentRows = useMemo(
+    () => results.filter((row) => row.model === selectedModel).sort((a, b) => a.expected - b.expected),
+    [selectedModel],
+  );
+  const selectedSummary = leaderboard.find((row) => row.model_name === selectedModel);
+
+  return (
+    <main className="min-h-screen bg-[#f6f8f5] text-ink">
+      <header className="border-b border-slate-200 bg-white/90">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-moss">Part 2 · 2026</p>
+              <h1 className="mt-1 text-3xl font-semibold text-ink sm:text-4xl">Repetitive Sums Benchmark</h1>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+                OpenAI Responses API logprob evaluation for repetitive sums from 2 through 100.
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <Metric label="Models" value={leaderboard.length} />
+              <Metric label="Rows" value={results.length} />
+              <Metric label="Best" value={pct(Math.max(...leaderboard.map((row) => row.avg_accuracy)))} />
+            </div>
+          </div>
+          <nav className="flex gap-2 overflow-x-auto">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  title={tab.label}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`inline-flex min-h-10 items-center gap-2 rounded-md border px-3 text-sm font-medium transition ${
+                    activeTab === tab.id
+                      ? "border-steel bg-steel text-white"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-steel"
+                  }`}
+                >
+                  <Icon size={17} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </header>
+
+      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        {activeTab === "leaderboard" && <Leaderboard selectedModel={selectedModel} setSelectedModel={setSelectedModel} />}
+        {activeTab === "results" && (
+          <Results rows={currentRows} selectedModel={selectedModel} setSelectedModel={setSelectedModel} summary={selectedSummary} />
+        )}
+        {activeTab === "history" && (
+          <History rows={historical} sortHistory={sortHistory} setSortHistory={setSortHistory} />
+        )}
+        {activeTab === "about" && <About />}
+      </section>
+    </main>
+  );
+}
+
+function Metric({ label, value }) {
+  return (
+    <div className="min-w-24 rounded-md border border-slate-200 bg-mist px-3 py-2">
+      <div className="text-lg font-semibold">{value}</div>
+      <div className="text-xs uppercase text-slate-500">{label}</div>
+    </div>
+  );
+}
+
+function Leaderboard({ selectedModel, setSelectedModel }) {
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
+        <section className="overflow-hidden rounded-md border border-slate-200 bg-white">
+          <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-3">
+            <ArrowDownUp size={18} className="text-steel" />
+            <h2 className="text-base font-semibold">Current Leaderboard</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <tr>
+                  <th className="px-4 py-3">Rank</th>
+                  <th className="px-4 py-3">Model</th>
+                  <th className="px-4 py-3">Accuracy</th>
+                  <th className="px-4 py-3">Mean Error</th>
+                  <th className="px-4 py-3">Failures</th>
+                  <th className="px-4 py-3">Evaluated</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {leaderboard.map((row, index) => (
+                  <tr
+                    key={row.model_name}
+                    onClick={() => setSelectedModel(row.model_name)}
+                    className={`cursor-pointer transition hover:bg-mist ${selectedModel === row.model_name ? "bg-[#edf5ee]" : ""}`}
+                  >
+                    <td className="px-4 py-3 font-semibold">{index + 1}</td>
+                    <td className="px-4 py-3 font-medium">{row.model_name}</td>
+                    <td className="px-4 py-3">{pct(row.avg_accuracy)}</td>
+                    <td className="px-4 py-3">{fmt.format(row.error_mean)}</td>
+                    <td className="px-4 py-3">{row.parsing_failure_count}</td>
+                    <td className="px-4 py-3">{row.evaluated_count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section className="rounded-md border border-slate-200 bg-white p-4">
+          <h2 className="text-base font-semibold">Accuracy Spread</h2>
+          <div className="mt-4 space-y-4">
+            {leaderboard.map((row) => (
+              <div key={row.model_name}>
+                <div className="mb-1 flex justify-between text-sm">
+                  <span>{row.model_name}</span>
+                  <span className="font-medium">{pct(row.avg_accuracy)}</span>
+                </div>
+                <div className="h-3 overflow-hidden rounded-sm bg-slate-100">
+                  <div className="h-full bg-moss" style={{ width: `${row.avg_accuracy}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function Results({ rows, selectedModel, setSelectedModel, summary }) {
+  const failures = rows.filter((row) => !row.is_correct);
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Model Results</h2>
+          <p className="text-sm text-slate-600">{selectedModel}</p>
+        </div>
+        <label className="inline-flex items-center gap-2 text-sm">
+          <ListFilter size={18} className="text-steel" />
+          <select
+            value={selectedModel}
+            onChange={(event) => setSelectedModel(event.target.value)}
+            className="rounded-md border border-slate-300 bg-white px-3 py-2"
+          >
+            {leaderboard.map((row) => (
+              <option key={row.model_name} value={row.model_name}>{row.model_name}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-4">
+        <Metric label="Accuracy" value={summary ? pct(summary.avg_accuracy) : "0%"} />
+        <Metric label="Correct" value={rows.filter((row) => row.is_correct).length} />
+        <Metric label="Wrong" value={failures.length} />
+        <Metric label="Parse Fails" value={summary?.parsing_failure_count ?? 0} />
+      </div>
+
+      <section className="rounded-md border border-slate-200 bg-white p-4">
+        <h3 className="text-base font-semibold">Correctness By Expected Result</h3>
+        <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(2.25rem,1fr))] gap-1">
+          {rows.map((row) => (
+            <div
+              key={`${row.model}-${row.expected}`}
+              title={`${row.sum} = ${row.expected}; model answered ${row.raw_text || "nothing"}`}
+              className={`flex aspect-square min-h-9 items-center justify-center rounded-sm text-xs font-semibold ${
+                row.is_correct ? "bg-[#dcedd6] text-[#24552b]" : "bg-[#f4d9d5] text-[#81291f]"
+              }`}
+            >
+              {row.expected}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-md border border-slate-200 bg-white">
+        <div className="border-b border-slate-200 px-4 py-3">
+          <h3 className="text-base font-semibold">Row-Level Logprob Results</h3>
+        </div>
+        <div className="max-h-[620px] overflow-auto">
+          <table className="min-w-full text-left text-sm">
+            <thead className="sticky top-0 bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th className="px-4 py-3">Expected</th>
+                <th className="px-4 py-3">Answer</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Token Logprobs</th>
+                <th className="px-4 py-3">Top Token</th>
+                <th className="px-4 py-3">Latency</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {rows.map((row) => (
+                <tr key={`${row.model}-${row.expected}`}>
+                  <td className="px-4 py-3">{row.expected}</td>
+                  <td className="px-4 py-3 font-medium">{row.raw_text}</td>
+                  <td className="px-4 py-3">
+                    {row.is_correct ? (
+                      <span className="inline-flex items-center gap-1 text-[#2d6a32]"><CheckCircle2 size={16} /> Correct</span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-coral"><XCircle size={16} /> Miss</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 font-mono text-xs">{row.token_logprobs.map((value) => fmt.format(value)).join(", ")}</td>
+                  <td className="px-4 py-3 font-mono text-xs">{topTokenLabel(row)}</td>
+                  <td className="px-4 py-3">{fmt.format(row.latency_ms)} ms</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function topTokenLabel(row) {
+  const first = row.top_logprobs?.[0]?.[0];
+  if (!first) return "n/a";
+  return `${JSON.stringify(first.token)} (${fmt.format(first.logprob)})`;
+}
+
+function History({ rows, sortHistory, setSortHistory }) {
+  const sorted = [...rows].sort((a, b) => {
+    if (sortHistory === "accuracy") return b.avg_accuracy - a.avg_accuracy;
+    if (sortHistory === "error") return a.error_mean - b.error_mean;
+    return a.model_name.localeCompare(b.model_name);
+  });
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Previous Benchmarks</h2>
+          <p className="text-sm text-slate-600">Extracted from the original benchmark README and kept separate from Part 2 execution artifacts.</p>
+        </div>
+        <label className="inline-flex items-center gap-2 text-sm">
+          <ChevronDown size={18} className="text-steel" />
+          <select
+            value={sortHistory}
+            onChange={(event) => setSortHistory(event.target.value)}
+            className="rounded-md border border-slate-300 bg-white px-3 py-2"
+          >
+            <option value="accuracy">Accuracy</option>
+            <option value="error">Mean error</option>
+            <option value="model">Model</option>
+          </select>
+        </label>
+      </div>
+      <section className="overflow-hidden rounded-md border border-slate-200 bg-white">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-left text-sm">
+            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th className="px-4 py-3">Model</th>
+                <th className="px-4 py-3">Accuracy</th>
+                <th className="px-4 py-3">Mean Error</th>
+                <th className="px-4 py-3">Median Error</th>
+                <th className="px-4 py-3">Max Error</th>
+                <th className="px-4 py-3">Failures</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {sorted.map((row) => (
+                <tr key={row.model_name}>
+                  <td className="px-4 py-3 font-medium">{row.model_name}</td>
+                  <td className="px-4 py-3">{pct(row.avg_accuracy)}</td>
+                  <td className="px-4 py-3">{fmt.format(row.error_mean)}</td>
+                  <td className="px-4 py-3">{fmt.format(row.error_median)}</td>
+                  <td className="px-4 py-3">{row.error_max}</td>
+                  <td className="px-4 py-3">{row.parsing_failure_count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function About() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">
+      <section className="rounded-md border border-slate-200 bg-white p-5">
+        <BookOpen className="text-steel" />
+        <h2 className="mt-3 text-xl font-semibold">About The Benchmark</h2>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          The dataset contains 99 prompts made from repeated additions of one, with expected answers from 2 through 100.
+          Part 2 evaluates three OpenAI models through the Responses API and records token-level logprob data for each answer.
+        </p>
+      </section>
+      <section className="rounded-md border border-slate-200 bg-white p-5">
+        <h3 className="text-base font-semibold">Method</h3>
+        <div className="mt-3 grid gap-3 text-sm leading-6 text-slate-600 sm:grid-cols-2">
+          <p>Models: gpt-5.4-mini, gpt-5.4, and gpt-5.5. The pro variant is intentionally excluded.</p>
+          <p>Endpoint: OpenAI Responses API with output text logprobs included and top token alternatives captured.</p>
+          <p>Scoring: parse the first integer in the model output, compare it to the expected sum length, and compute accuracy plus absolute error stats.</p>
+          <p>History: previous leaderboard rows are extracted into a separate static data file, while old execution artifacts are not reused as Part 2 results.</p>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<App />);
