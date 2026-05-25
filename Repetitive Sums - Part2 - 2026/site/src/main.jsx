@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import combinedLeaderboard from "./data/combined_leaderboard.json";
 import results from "./data/part2_results.json";
-import historicalDetails from "./data/historical_detailed_results.json";
 import historicalModelDates from "./data/historical_model_dates.json";
 import "./styles.css";
 
@@ -27,7 +26,29 @@ const tabs = [
 ];
 
 const fmt = new Intl.NumberFormat("en", { maximumFractionDigits: 2 });
-const allResults = [...results, ...historicalDetails];
+const historicalRunModules = import.meta.glob("./data/historical_runs/*.json", { eager: true });
+const historicalRuns = Object.values(historicalRunModules).map((module) => module.default ?? module);
+const historicalResults = historicalRuns.flatMap((run) =>
+  Object.entries(run.results).map(([expected, isCorrect]) => ({
+    model: run.metadata.model_name,
+    sum: Array.from({ length: Number(expected) }, () => "1").join("+"),
+    expected: Number(expected),
+    raw_text: "n/a",
+    parsed_answer: null,
+    is_correct: Boolean(isCorrect),
+    error_abs: null,
+    tokens: [],
+    token_logprobs: [],
+    top_logprobs: [],
+    latency_ms: null,
+    api_endpoint: "historical PNG chart",
+    created_at: run.metadata.test_date || "",
+    error: "",
+    benchmark: run.metadata.benchmark,
+    detail_source: run.metadata.source_png,
+  })),
+);
+const allResults = [...results, ...historicalResults];
 
 function pct(value) {
   return `${fmt.format(value)}%`;
@@ -243,9 +264,9 @@ function Results({ rows, selectedModel, setSelectedModel, summary }) {
           <p className="mt-2 text-sm leading-6 text-slate-600">
             {hasRows
               ? isHistorical
-                ? "Historical row-level answers are available for this model. Logprob columns are empty because the original dataset stored parsed answers, not token probabilities."
+                ? "Historical correctness positions are available for this model from the archived PNG charts. Answers and logprob columns are unavailable for the original runs."
                 : "Part 2 row-level answers include Responses API token logprobs and top token alternatives."
-              : "Only the historical leaderboard summary is available for this model; the original row-level answer table was not published for it."}
+              : "Only the historical leaderboard summary is available for this model."}
           </p>
         </section>
       )}
@@ -430,7 +451,7 @@ function About() {
           <h3 className="text-base font-semibold">Original Benchmark Archive</h3>
           <div className="mt-3 space-y-3 text-sm leading-6 text-slate-600">
             <p>The archive contributes {originalCount} previous leaderboard rows from the original Repetitive Sums benchmark.</p>
-            <p>{detailCount - part2Count} archived models include row-level historical answers from the published results dataset.</p>
+            <p>{detailCount - part2Count} archived models include per-expected-value correctness recovered from the archived PNG charts.</p>
             <p>{summaryOnlyCount} archived models are shown as leaderboard summaries only because row-level answer tables were not published for them.</p>
             <p>History includes test and release dates for {datedHistoryCount} archived models; hover a model name in the History table for the date source note.</p>
           </div>

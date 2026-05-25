@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch row-level historical benchmark results from the public HF dataset."""
+"""Rebuild combined historical leaderboard metadata from compact run files."""
 
 from __future__ import annotations
 
@@ -7,64 +7,14 @@ import json
 from pathlib import Path
 from typing import Any
 
-import requests
-
-DATASET = "the-french-artist/repetitive_sums_benchmark_20_models_results"
-ROWS_URL = "https://datasets-server.huggingface.co/rows"
-
-
-def fetch_rows() -> dict[str, Any]:
-    response = requests.get(
-        ROWS_URL,
-        params={"dataset": DATASET, "config": "default", "split": "train", "offset": 0, "length": 100},
-        timeout=30,
-    )
-    response.raise_for_status()
-    return response.json()
-
-
-def normalize(payload: dict[str, Any]) -> list[dict[str, Any]]:
-    model_names = [
-        feature["name"]
-        for feature in payload["features"]
-        if feature["name"] not in {"sum", "result"}
-    ]
-    details = []
-    for item in payload["rows"]:
-        row = item["row"]
-        expected = int(row["result"])
-        for model in model_names:
-            parsed = int(row[model])
-            details.append({
-                "model": model,
-                "sum": row["sum"],
-                "expected": expected,
-                "raw_text": str(parsed),
-                "parsed_answer": parsed,
-                "is_correct": parsed == expected,
-                "error_abs": abs(parsed - expected) if parsed else None,
-                "tokens": [],
-                "token_logprobs": [],
-                "top_logprobs": [],
-                "latency_ms": None,
-                "api_endpoint": "historical dataset",
-                "created_at": "2024-06-12T15:16:43Z",
-                "error": "",
-                "benchmark": "Original Repetitive Sums Benchmark Dataset",
-                "detail_source": DATASET,
-            })
-    return details
+EXPECTED_VALUES = list(range(2, 101))
 
 
 def combined_leaderboard(root: Path) -> list[dict[str, Any]]:
     current = json.loads((root / "results" / "part2_leaderboard.json").read_text())
     historical = json.loads((root / "results" / "historical_leaderboard.json").read_text())
-    detailed_rows = json.loads((root / "results" / "historical_detailed_results.json").read_text())
     historical_dates = json.loads((root / "results" / "historical_model_dates.json").read_text())
-    detailed_streaks = {
-        model: longest_correct_streak([row for row in detailed_rows if row["model"] == model])
-        for model in {row["model"] for row in detailed_rows}
-    }
+    detailed_streaks = historical_streaks(root / "results" / "historical_runs")
     combined = []
     for row in current:
         combined.append({
@@ -78,21 +28,25 @@ def combined_leaderboard(root: Path) -> list[dict[str, Any]]:
             **row,
             **historical_dates.get(row["model_name"], {}),
             "evaluated_count": 99,
-            "has_detail": False,
-            "longest_correct_streak": None,
+            "has_detail": row["model_name"] in detailed_streaks,
+            "longest_correct_streak": detailed_streaks.get(row["model_name"]),
         })
-    for row in combined:
-        if row["model_name"] in detailed_streaks:
-            row["has_detail"] = True
-            row["longest_correct_streak"] = detailed_streaks[row["model_name"]]
     return sorted(combined, key=lambda row: row["avg_accuracy"], reverse=True)
 
 
-def longest_correct_streak(rows: list[dict[str, Any]]) -> int:
+def historical_streaks(run_dir: Path) -> dict[str, int]:
+    streaks = {}
+    for run_file in run_dir.glob("*.json"):
+        payload = json.loads(run_file.read_text())
+        streaks[payload["metadata"]["model_name"]] = longest_correct_streak(payload["results"])
+    return streaks
+
+
+def longest_correct_streak(results: dict[str, bool]) -> int:
     streak = 0
     best = 0
-    for row in sorted(rows, key=lambda item: int(item["expected"])):
-        if row.get("is_correct"):
+    for expected in EXPECTED_VALUES:
+        if results[str(expected)]:
             streak += 1
             best = max(best, streak)
         else:
@@ -103,9 +57,10 @@ def longest_correct_streak(rows: list[dict[str, Any]]) -> int:
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     results_dir = root / "results"
-    details = normalize(fetch_rows())
-    (results_dir / "historical_detailed_results.json").write_text(json.dumps(details, indent=2) + "\n")
     (results_dir / "combined_leaderboard.json").write_text(json.dumps(combined_leaderboard(root), indent=2) + "\n")
+    site_data = root / "site" / "src" / "data"
+    site_data.mkdir(parents=True, exist_ok=True)
+    (site_data / "combined_leaderboard.json").write_text(json.dumps(combined_leaderboard(root), indent=2) + "\n")
     return 0
 
 
