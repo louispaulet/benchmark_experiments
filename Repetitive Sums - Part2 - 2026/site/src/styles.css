@@ -14,3 +14,157 @@ button,
 select {
   font: inherit;
 }
+
+.matrix-scroll {
+  max-height: min(74vh, 860px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+}
+
+.matrix-grid {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+}
+
+.matrix-grid-header {
+  min-height: 24px;
+  border-bottom: 1px solid rgb(226 232 240);
+  background: rgb(248 250 252);
+}
+
+.matrix-body {
+  min-width: 0;
+}
+
+.matrix-row {
+  min-height: 24px;
+  border-bottom: 1px solid rgb(241 245 249);
+  background: white;
+}
+
+.matrix-row:hover {
+  background: #eef3f7;
+}
+
+.matrix-model-header,
+.matrix-model-cell {
+  min-width: 0;
+  border-right: 1px solid rgb(226 232 240);
+}
+
+.matrix-model-header {
+  display: flex;
+  align-items: center;
+  padding: 0 0.625rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: rgb(100 116 139);
+  text-transform: uppercase;
+}
+
+.matrix-model-cell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.5rem;
+  padding: 0 0.5rem 0 0.625rem;
+}
+
+.matrix-model-name {
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #172026;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matrix-model-meta {
+  font-size: 0.625rem;
+  line-height: 1;
+  color: rgb(100 116 139);
+  white-space: nowrap;
+}
+
+.matrix-dot-cell {
+  min-width: 0;
+}
+
+.matrix-axis {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.matrix-axis span {
+  position: absolute;
+  top: 50%;
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 1;
+  color: rgb(100 116 139);
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.matrix-axis span:first-child {
+  transform: translate(0, -50%);
+}
+
+.matrix-axis span:last-child {
+  transform: translate(-100%, -50%);
+}
+
+.matrix-dot-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.matrix-dot {
+  display: block;
+  width: clamp(2px, 58%, 7px);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+.matrix-dot-correct {
+  background: #2f9d55;
+}
+
+.matrix-dot-wrong {
+  background: #df4f4f;
+}
+
+.matrix-dot-missing {
+  background: #d8dee8;
+}
+
+@media (max-width: 640px) {
+  .matrix-scroll {
+    max-height: 72vh;
+  }
+
+  .matrix-grid {
+    grid-template-columns: minmax(7rem, 8rem) repeat(99, minmax(0, 1fr)) !important;
+  }
+
+  .matrix-model-cell {
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: 0.4rem;
+  }
+
+  .matrix-model-meta {
+    display: none;
+  }
+
+  .matrix-dot {
+    width: clamp(1.5px, 70%, 4px);
+  }
+}

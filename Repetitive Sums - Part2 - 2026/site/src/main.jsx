@@ -392,6 +392,7 @@ function Results({ rows, selectedModel, setSelectedModel, summary }) {
 function Matrix({ rows, sortMatrix, setSortMatrix }) {
   const modelCount = rows.length;
   const cellsPerModel = questionNumbers.length;
+  const matrixTemplateColumns = `minmax(9.5rem, 18rem) repeat(${cellsPerModel}, minmax(0, 1fr))`;
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -427,59 +428,61 @@ function Matrix({ rows, sortMatrix, setSortMatrix }) {
           </div>
         </div>
 
-        <div className="overflow-auto">
-          <table className="min-w-[1900px] border-separate border-spacing-0 text-left">
-            <thead className="sticky top-0 z-30">
-              <tr>
-                <th className="sticky left-0 z-40 w-72 border-b border-r border-slate-200 bg-slate-50 px-4 py-3 text-xs uppercase tracking-wide text-slate-500 shadow-[1px_0_0_0_rgba(226,232,240,1)]">
-                  Model
-                </th>
-                {questionNumbers.map((question) => (
-                  <th
-                    key={question}
-                    className="w-5 border-b border-slate-200 bg-slate-50 px-0 py-3 text-center text-[10px] font-medium text-slate-500"
-                  >
-                    {question}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.summary.model_name} className="group">
-                  <th className="sticky left-0 z-20 border-b border-r border-slate-100 bg-white px-4 py-3 text-left align-top shadow-[1px_0_0_0_rgba(226,232,240,0.75)] group-hover:bg-mist">
-                    <div className="text-sm font-medium text-ink">{row.summary.model_name}</div>
-                    <div className="mt-1 space-y-0.5 text-[11px] leading-4 text-slate-500">
-                      <div>Release: {displayDate(row.releaseDate)}</div>
-                      <div>Accuracy: {pct(row.summary.avg_accuracy)} · Streak: {streak(row.summary.longest_correct_streak)}</div>
+        <div className="matrix-scroll" data-testid="dot-matrix-scroll">
+          <div
+            className="matrix-grid matrix-grid-header sticky top-0 z-20"
+            style={{ gridTemplateColumns: matrixTemplateColumns }}
+            role="row"
+          >
+            <div className="matrix-model-header" role="columnheader">
+              Model
+            </div>
+            <div className="matrix-axis" style={{ gridColumn: `span ${cellsPerModel}` }} role="columnheader">
+              <span style={{ left: "0%" }}>2</span>
+              <span style={{ left: "23.5%" }}>25</span>
+              <span style={{ left: "49%" }}>50</span>
+              <span style={{ left: "74.5%" }}>75</span>
+              <span style={{ left: "100%" }}>100</span>
+            </div>
+          </div>
+
+          <div className="matrix-body" role="table" aria-label="Model correctness dot matrix">
+            {rows.map((row) => (
+              <div
+                key={row.summary.model_name}
+                className="matrix-grid matrix-row"
+                style={{ gridTemplateColumns: matrixTemplateColumns }}
+                role="row"
+              >
+                <div className="matrix-model-cell" role="rowheader">
+                  <span className="matrix-model-name" title={row.summary.model_name}>
+                    {row.summary.model_name}
+                  </span>
+                  <span className="matrix-model-meta">
+                    {pct(row.summary.avg_accuracy)} · {displayDate(row.releaseDate)}
+                  </span>
+                </div>
+                {questionNumbers.map((question) => {
+                  const result = row.rowsForModel.get(question);
+                  const isCorrect = result?.is_correct;
+                  const swatchClass =
+                    isCorrect === true
+                      ? "matrix-dot-correct"
+                      : isCorrect === false
+                        ? "matrix-dot-wrong"
+                        : "matrix-dot-missing";
+                  const tooltip = result
+                    ? `${row.summary.model_name} · ${result.sum} = ${result.expected} · ${result.is_correct ? "correct" : "wrong"}${result.raw_text ? ` · answer ${result.raw_text}` : ""}`
+                    : `${row.summary.model_name} · ${question} · missing result`;
+                  return (
+                    <div key={question} className="matrix-dot-cell" role="cell">
+                      <span title={tooltip} aria-label={tooltip} className={`matrix-dot ${swatchClass}`} />
                     </div>
-                  </th>
-                  {questionNumbers.map((question) => {
-                    const result = row.rowsForModel.get(question);
-                    const isCorrect = result?.is_correct;
-                    const swatchClass =
-                      isCorrect === true
-                        ? "bg-[#34a853] ring-[#2d8c44]"
-                        : isCorrect === false
-                          ? "bg-[#ea5455] ring-[#cc3e3f]"
-                          : "bg-slate-100 ring-slate-200";
-                    const tooltip = result
-                      ? `${row.summary.model_name} · ${result.sum} = ${result.expected} · ${result.is_correct ? "correct" : "wrong"}${result.raw_text ? ` · answer ${result.raw_text}` : ""}`
-                      : `${row.summary.model_name} · ${question} · missing result`;
-                    return (
-                      <td key={question} className="border-b border-slate-100 px-0 py-2 text-center">
-                        <span
-                          title={tooltip}
-                          aria-label={tooltip}
-                          className={`mx-auto block size-3 rounded-[3px] ring-1 ring-inset ${swatchClass}`}
-                        />
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>
