@@ -57,4 +57,32 @@ We explored five main ways to ensure a robust benchmarking protocol:
 - **Best Methods**: Methods 2 and 5 were the most effective, with Method 2 being preferable for performance (fewer tokens to generate).
 - **Counting Ability**: LLAMA 8B Q4 can count up to 16 when given repetitive sums of ones.
 
+## Repetitive Sums Part 2 Site 🖥️
+
+The Vite app for the 2026 Part 2 benchmark lives in `Repetitive Sums - Part2 - 2026/site`. It presents the combined leaderboard, model-level results, a correctness matrix, historical benchmark rows, and benchmark context.
+
+```mermaid
+flowchart TD
+  Root["site/src/main.jsx<br/>React root + HashRouter"] --> App["site/src/App.jsx<br/>App shell, shared route state, routes"]
+  App --> Header["components/AppHeader.jsx<br/>Header metrics + navigation"]
+  App --> Views["views/<br/>Route-level screens"]
+  Views --> Leaderboard["Leaderboard.jsx"]
+  Views --> Results["Results.jsx"]
+  Views --> Matrix["Matrix.jsx"]
+  Views --> History["History.jsx"]
+  Views --> About["About.jsx"]
+  App --> Lib["lib/<br/>Pure data + formatting helpers"]
+  Views --> Components["components/<br/>Reusable UI pieces"]
+  Lib --> Data["data/*.json<br/>Generated benchmark inputs"]
+  Tests["*.test.jsx / *.test.js<br/>Vitest + Testing Library"] --> App
+  Tests --> Lib
+```
+
+### Site Development
+
+- Install dependencies from `Repetitive Sums - Part2 - 2026/site` with `npm install`.
+- Run unit tests with `npm test`.
+- Build the production bundle with `npm run build`.
+- Keep benchmark JSON in `src/data/` as source input; put UI transformations in `src/lib/benchmarkData.js`.
+
 Feel free to explore the repository and experiment with the provided notebooks. Your insights and contributions are always welcome! 🚀
