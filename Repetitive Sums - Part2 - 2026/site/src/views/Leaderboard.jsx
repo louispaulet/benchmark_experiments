@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowDownUp } from "lucide-react";
 import { combinedLeaderboard } from "../lib/benchmarkData";
-import { formatNumber, pct, streak } from "../lib/format";
+import { benchmarkLabel, formatNumber, pct, streak } from "../lib/format";
 
 export default function Leaderboard({ selectedModel, openModel }) {
   return (
@@ -41,7 +41,7 @@ export default function Leaderboard({ selectedModel, openModel }) {
                     <td className="px-4 py-3">{streak(row.longest_correct_streak)}</td>
                     <td className="px-4 py-3">{row.parsing_failure_count}</td>
                     <td className="px-4 py-3">{row.evaluated_count}</td>
-                    <td className="px-4 py-3 text-slate-600">{row.benchmark}</td>
+                    <td className="px-4 py-3 text-slate-600">{benchmarkLabel(row.benchmark)}</td>
                     <td className="px-4 py-3">
                       <span className={`rounded-sm px-2 py-1 text-xs font-semibold ${row.has_detail ? "bg-[#dcedd6] text-[#24552b]" : "bg-slate-100 text-slate-500"}`}>
                         {row.has_detail ? "rows" : "summary"}

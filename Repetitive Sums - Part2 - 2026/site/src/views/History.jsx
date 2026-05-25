@@ -21,7 +21,7 @@ export default function History({ rows, sortHistory, setSortHistory }) {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold">Previous Benchmarks</h2>
-          <p className="text-sm text-slate-600">Extracted from the original benchmark README and kept separate from Part 2 execution artifacts.</p>
+          <p className="text-sm text-slate-600">Extracted from the original benchmark README and included alongside current detailed runs.</p>
         </div>
         <label className="inline-flex items-center gap-2 text-sm">
           <ChevronDown size={18} className="text-steel" />

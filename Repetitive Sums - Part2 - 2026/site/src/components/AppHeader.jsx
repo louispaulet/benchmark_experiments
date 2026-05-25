@@ -1,11 +1,12 @@
 import React from "react";
-import { Activity, BarChart3, Database, Info, ListFilter } from "lucide-react";
+import { Activity, BarChart3, Database, Home, Info, ListFilter } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { pct } from "../lib/format";
 import Metric from "./Metric";
 
 const tabs = [
-  { path: "/", label: "Leaderboard", icon: BarChart3 },
+  { path: "/", label: "Home", icon: Home },
+  { path: "/leaderboard", label: "Leaderboard", icon: BarChart3 },
   { path: "/results", label: "Results", icon: Activity },
   { path: "/matrix", label: "Matrix", icon: ListFilter },
   { path: "/history", label: "History", icon: Database },
@@ -18,10 +19,11 @@ export default function AppHeader({ modelCount, rowCount, bestAccuracy }) {
       <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-moss">Part 2 · 2026</p>
-            <h1 className="mt-1 text-3xl font-semibold text-ink sm:text-4xl">Repetitive Sums Benchmark</h1>
+            <NavLink to="/" className="inline-block rounded-sm text-ink transition hover:text-steel focus:outline-none focus:ring-2 focus:ring-steel focus:ring-offset-2">
+              <h1 className="text-3xl font-semibold sm:text-4xl">Repetitive Sums Benchmark</h1>
+            </NavLink>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              OpenAI Responses API logprob evaluation for repetitive sums from 2 through 100.
+              Benchmark results for repetitive sums from 2 through 100 across current and archived model runs.
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center">

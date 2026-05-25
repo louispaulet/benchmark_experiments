@@ -2,7 +2,7 @@ import React from "react";
 import { CheckCircle2, ListFilter, XCircle } from "lucide-react";
 import Metric from "../components/Metric";
 import { combinedLeaderboard } from "../lib/benchmarkData";
-import { formatNumber, pct, streak, topTokenLabel } from "../lib/format";
+import { benchmarkLabel, formatNumber, pct, streak, topTokenLabel } from "../lib/format";
 
 export default function Results({ rows, selectedModel, setSelectedModel, summary }) {
   const failures = rows.filter((row) => !row.is_correct);
@@ -42,12 +42,12 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
 
       {summary && (
         <section className="rounded-md border border-slate-200 bg-white p-4">
-          <h3 className="text-base font-semibold">{summary.benchmark}</h3>
+          <h3 className="text-base font-semibold">{benchmarkLabel(summary.benchmark)}</h3>
           <p className="mt-2 text-sm leading-6 text-slate-600">
             {hasRows
               ? isHistorical
                 ? "Historical correctness positions are available for this model from the archived PNG charts. Answers and logprob columns are unavailable for the original runs."
-                : "Part 2 row-level answers include Responses API token logprobs and top token alternatives."
+                : "Detailed row-level answers include Responses API token logprobs and top token alternatives."
               : "Only the historical leaderboard summary is available for this model."}
           </p>
         </section>

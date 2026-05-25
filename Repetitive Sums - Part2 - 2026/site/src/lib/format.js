@@ -21,6 +21,12 @@ export function displayDate(value) {
   return value.includes("T") ? value.slice(0, 10) : value;
 }
 
+export function benchmarkLabel(value) {
+  if (value === "Part 2 - 2026") return "Detailed benchmark run";
+  if (value?.startsWith("Original")) return "Benchmark archive";
+  return value || "Benchmark run";
+}
+
 export function topTokenLabel(row) {
   const first = row.top_logprobs?.[0]?.[0];
   if (!first) return "n/a";

@@ -1,5 +1,5 @@
 {
-  "name": "repetitive-sums-part2-site",
+  "name": "repetitive-sums-site",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -m \"Deploy repetitive sums part 2 site\""
+    "deploy": "gh-pages -d dist -m \"Deploy repetitive sums benchmark site\""
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.1.2",

@@ -26,17 +26,32 @@ function firstBodyRow(tableName) {
 }
 
 describe("App", () => {
-  it("renders the app header, navigation, and default leaderboard route", () => {
+  it("renders the app header, navigation, and homepage sections in order", () => {
     renderApp("/");
 
     expect(screen.getByRole("heading", { name: "Repetitive Sums Benchmark" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Repetitive Sums Benchmark" })).toHaveAttribute("href", "#/");
+    expect(screen.getByRole("link", { name: /home/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /leaderboard/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /louispaulet\/benchmark_experiments/i })).toHaveAttribute(
       "href",
       "https://github.com/louispaulet/benchmark_experiments",
     );
-    expect(screen.getByRole("heading", { name: "Combined Leaderboard" })).toBeInTheDocument();
+    const matrixHeading = screen.getByRole("heading", { name: "Dot Matrix" });
+    const leaderboardHeading = screen.getByRole("heading", { name: "Combined Leaderboard" });
+    expect(matrixHeading.compareDocumentPosition(leaderboardHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Accuracy Spread" })).toBeInTheDocument();
+  });
+
+  it("returns home when the benchmark title is clicked", async () => {
+    const user = userEvent.setup();
+    renderApp("/matrix");
+
+    await user.click(screen.getByRole("link", { name: "Repetitive Sums Benchmark" }));
+
+    expect(window.location.hash).toBe("#/");
+    expect(screen.getByRole("heading", { name: "Dot Matrix" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Combined Leaderboard" })).toBeInTheDocument();
   });
 
   it("opens model results when a leaderboard row is clicked", async () => {
@@ -47,7 +62,7 @@ describe("App", () => {
     await user.click(within(table).getByText("gpt-5.5"));
 
     expect(screen.getByRole("heading", { name: "Model Results" })).toBeInTheDocument();
-    expect(screen.getByText("Part 2 row-level answers include Responses API token logprobs and top token alternatives.")).toBeInTheDocument();
+    expect(screen.getByText("Detailed row-level answers include Responses API token logprobs and top token alternatives.")).toBeInTheDocument();
     expect(window.location.hash).toBe("#/results");
   });
 
@@ -103,9 +118,10 @@ describe("App", () => {
     expect(within(firstBodyRow("Previous benchmarks")).getByText("claude-3-haiku-20240307")).toBeInTheDocument();
   });
 
-  it("redirects unknown routes back to the leaderboard", () => {
+  it("redirects unknown routes back to the homepage", () => {
     renderApp("/missing");
 
+    expect(screen.getByRole("heading", { name: "Dot Matrix" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Combined Leaderboard" })).toBeInTheDocument();
   });
 });

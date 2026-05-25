@@ -16,7 +16,7 @@ export default function Matrix({ rows, sortMatrix, setSortMatrix }) {
         <div>
           <h2 className="text-xl font-semibold">Dot Matrix</h2>
           <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">
-            Green tiles are correct answers and red tiles are wrong answers. The matrix merges the full historical archive with the latest Part 2 runs, one row per model and one column per expected answer from 2 to 100.
+            Green tiles are correct answers and red tiles are wrong answers. The matrix merges every benchmark result with available row-level detail, one row per model and one column per expected answer from 2 to 100.
           </p>
         </div>
         <label className="inline-flex items-center gap-2 text-sm">

@@ -11,6 +11,7 @@ import {
 } from "./lib/benchmarkData";
 import About from "./views/About";
 import History from "./views/History";
+import Home from "./views/Home";
 import Leaderboard from "./views/Leaderboard";
 import Matrix from "./views/Matrix";
 import Results from "./views/Results";
@@ -37,7 +38,19 @@ export default function App() {
 
       <section className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
         <Routes>
-          <Route path="/" element={<Leaderboard selectedModel={selectedModel} openModel={openModel} />} />
+          <Route
+            path="/"
+            element={
+              <Home
+                selectedModel={selectedModel}
+                openModel={openModel}
+                rows={matrixRows}
+                sortMatrix={sortMatrix}
+                setSortMatrix={setSortMatrix}
+              />
+            }
+          />
+          <Route path="/leaderboard" element={<Leaderboard selectedModel={selectedModel} openModel={openModel} />} />
           <Route
             path="/results"
             element={
