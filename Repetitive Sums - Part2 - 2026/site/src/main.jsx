@@ -21,6 +21,7 @@ import "./styles.css";
 const tabs = [
   { path: "/", label: "Leaderboard", icon: BarChart3 },
   { path: "/results", label: "Results", icon: Activity },
+  { path: "/matrix", label: "Matrix", icon: ListFilter },
   { path: "/history", label: "History", icon: Database },
   { path: "/about", label: "About", icon: Info },
 ];
@@ -49,6 +50,26 @@ const historicalResults = historicalRuns.flatMap((run) =>
   })),
 );
 const allResults = [...results, ...historicalResults];
+const questionNumbers = Array.from({ length: 99 }, (_, index) => index + 2);
+const modelResultsByName = new Map();
+const modelFirstObservedAt = new Map();
+
+for (const row of allResults) {
+  const expected = Number(row.expected);
+  const modelName = row.model;
+  if (!modelResultsByName.has(modelName)) {
+    modelResultsByName.set(modelName, new Map());
+  }
+  modelResultsByName.get(modelName).set(expected, row);
+
+  const observedAt = row.created_at || row.test_date || "";
+  if (observedAt) {
+    const current = modelFirstObservedAt.get(modelName);
+    if (!current || Date.parse(observedAt) < Date.parse(current)) {
+      modelFirstObservedAt.set(modelName, observedAt);
+    }
+  }
+}
 
 function pct(value) {
   return `${fmt.format(value)}%`;
@@ -62,10 +83,48 @@ function dateValue(value) {
   return value || "n/a";
 }
 
+function displayDate(value) {
+  if (!value) return "n/a";
+  return value.includes("T") ? value.slice(0, 10) : value;
+}
+
+function buildMatrixRows(sortMatrix) {
+  const rows = combinedLeaderboard.map((summary) => {
+    const rowsForModel = modelResultsByName.get(summary.model_name) ?? new Map();
+    const releaseDate = summary.release_date || summary.test_date || modelFirstObservedAt.get(summary.model_name) || "";
+    return {
+      summary,
+      rowsForModel,
+      releaseDate,
+    };
+  });
+
+  return rows.sort((a, b) => {
+    if (sortMatrix === "release_date") {
+      const bDate = Date.parse(b.releaseDate || "");
+      const aDate = Date.parse(a.releaseDate || "");
+      const left = Number.isNaN(bDate) ? -Infinity : bDate;
+      const right = Number.isNaN(aDate) ? -Infinity : aDate;
+      if (left !== right) return left - right;
+    }
+    if (sortMatrix === "accuracy" && b.summary.avg_accuracy !== a.summary.avg_accuracy) {
+      return b.summary.avg_accuracy - a.summary.avg_accuracy;
+    }
+    if (sortMatrix === "streak") {
+      const bStreak = b.summary.longest_correct_streak ?? -1;
+      const aStreak = a.summary.longest_correct_streak ?? -1;
+      if (bStreak !== aStreak) return bStreak - aStreak;
+    }
+    return a.summary.model_name.localeCompare(b.summary.model_name);
+  });
+}
+
 function App() {
   const navigate = useNavigate();
   const [selectedModel, setSelectedModel] = useState(combinedLeaderboard[0]?.model_name ?? "");
+  const [sortMatrix, setSortMatrix] = useState("accuracy");
   const [sortHistory, setSortHistory] = useState("accuracy");
+  const matrixRows = useMemo(() => buildMatrixRows(sortMatrix), [sortMatrix]);
   const currentRows = useMemo(
     () => allResults.filter((row) => row.model === selectedModel).sort((a, b) => a.expected - b.expected),
     [selectedModel],
@@ -125,6 +184,7 @@ function App() {
             path="/results"
             element={<Results rows={currentRows} selectedModel={selectedModel} setSelectedModel={setSelectedModel} summary={selectedSummary} />}
           />
+          <Route path="/matrix" element={<Matrix rows={matrixRows} sortMatrix={sortMatrix} setSortMatrix={setSortMatrix} />} />
           <Route
             path="/history"
             element={
@@ -329,6 +389,112 @@ function Results({ rows, selectedModel, setSelectedModel, summary }) {
   );
 }
 
+function Matrix({ rows, sortMatrix, setSortMatrix }) {
+  const modelCount = rows.length;
+  const cellsPerModel = questionNumbers.length;
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Dot Matrix</h2>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">
+            Green tiles are correct answers and red tiles are wrong answers. The matrix merges the full historical archive with the latest Part 2 runs, one row per model and one column per expected answer from 2 to 100.
+          </p>
+        </div>
+        <label className="inline-flex items-center gap-2 text-sm">
+          <ChevronDown size={18} className="text-steel" />
+          <select
+            value={sortMatrix}
+            onChange={(event) => setSortMatrix(event.target.value)}
+            className="rounded-md border border-slate-300 bg-white px-3 py-2"
+          >
+            <option value="accuracy">Accuracy</option>
+            <option value="release_date">Model release date</option>
+            <option value="streak">Longest streak</option>
+          </select>
+        </label>
+      </div>
+
+      <section className="rounded-md border border-slate-200 bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
+          <div className="text-sm text-slate-600">
+            {modelCount} models · {cellsPerModel} questions per model
+          </div>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+            <LegendSwatch label="Correct" className="bg-[#dcedd6] ring-[#b5d7ae]" />
+            <LegendSwatch label="Wrong" className="bg-[#f4d9d5] ring-[#e7b5ac]" />
+            <LegendSwatch label="Missing" className="bg-slate-100 ring-slate-200" />
+          </div>
+        </div>
+
+        <div className="overflow-auto">
+          <table className="min-w-[1900px] border-separate border-spacing-0 text-left">
+            <thead className="sticky top-0 z-30">
+              <tr>
+                <th className="sticky left-0 z-40 w-72 border-b border-r border-slate-200 bg-slate-50 px-4 py-3 text-xs uppercase tracking-wide text-slate-500 shadow-[1px_0_0_0_rgba(226,232,240,1)]">
+                  Model
+                </th>
+                {questionNumbers.map((question) => (
+                  <th
+                    key={question}
+                    className="w-5 border-b border-slate-200 bg-slate-50 px-0 py-3 text-center text-[10px] font-medium text-slate-500"
+                  >
+                    {question}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.summary.model_name} className="group">
+                  <th className="sticky left-0 z-20 border-b border-r border-slate-100 bg-white px-4 py-3 text-left align-top shadow-[1px_0_0_0_rgba(226,232,240,0.75)] group-hover:bg-mist">
+                    <div className="text-sm font-medium text-ink">{row.summary.model_name}</div>
+                    <div className="mt-1 space-y-0.5 text-[11px] leading-4 text-slate-500">
+                      <div>Release: {displayDate(row.releaseDate)}</div>
+                      <div>Accuracy: {pct(row.summary.avg_accuracy)} · Streak: {streak(row.summary.longest_correct_streak)}</div>
+                    </div>
+                  </th>
+                  {questionNumbers.map((question) => {
+                    const result = row.rowsForModel.get(question);
+                    const isCorrect = result?.is_correct;
+                    const swatchClass =
+                      isCorrect === true
+                        ? "bg-[#34a853] ring-[#2d8c44]"
+                        : isCorrect === false
+                          ? "bg-[#ea5455] ring-[#cc3e3f]"
+                          : "bg-slate-100 ring-slate-200";
+                    const tooltip = result
+                      ? `${row.summary.model_name} · ${result.sum} = ${result.expected} · ${result.is_correct ? "correct" : "wrong"}${result.raw_text ? ` · answer ${result.raw_text}` : ""}`
+                      : `${row.summary.model_name} · ${question} · missing result`;
+                    return (
+                      <td key={question} className="border-b border-slate-100 px-0 py-2 text-center">
+                        <span
+                          title={tooltip}
+                          aria-label={tooltip}
+                          className={`mx-auto block size-3 rounded-[3px] ring-1 ring-inset ${swatchClass}`}
+                        />
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function LegendSwatch({ label, className }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className={`inline-block size-3 rounded-[3px] ring-1 ring-inset ${className}`} />
+      {label}
+    </span>
+  );
+}
+
 function topTokenLabel(row) {
   const first = row.top_logprobs?.[0]?.[0];
   if (!first) return "n/a";
@@ -424,7 +590,7 @@ function About() {
             <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-600">
               This app presents the Repetitive Sums benchmark across the new Part 2 run and the original benchmark archive.
               Every benchmark asks models to answer repeated additions of one, with expected answers from 2 through 100.
-              The combined leaderboard ranks all models together while preserving which benchmark each row came from.
+              The combined leaderboard ranks all models together while preserving which benchmark each row came from, and the Matrix view lets you inspect every answer as a green or red tile.
             </p>
           </div>
         </div>
