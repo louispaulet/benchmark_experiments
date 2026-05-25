@@ -27,6 +27,7 @@ export default function Matrix({ rows, sortMatrix, setSortMatrix }) {
             className="rounded-md border border-slate-300 bg-white px-3 py-2"
           >
             <option value="accuracy">Accuracy</option>
+            <option value="model_size">Model size</option>
             <option value="release_date">Model release date</option>
             <option value="streak">Longest streak</option>
           </select>
@@ -80,7 +81,7 @@ export default function Matrix({ rows, sortMatrix, setSortMatrix }) {
                     {row.summary.model_name}
                   </span>
                   <span className="matrix-model-meta">
-                    {pct(row.summary.avg_accuracy)} · {displayDate(row.releaseDate)}
+                    {pct(row.summary.avg_accuracy)} · {row.summary.model_size_label} · {displayDate(row.releaseDate)}
                   </span>
                 </div>
                 {questionNumbers.map((question) => {

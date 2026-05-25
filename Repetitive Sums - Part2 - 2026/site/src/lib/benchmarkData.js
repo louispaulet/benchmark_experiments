@@ -1,11 +1,12 @@
 import combinedLeaderboardData from "../data/combined_leaderboard.json";
 import historicalModelDatesData from "../data/historical_model_dates.json";
 import part2ResultsData from "../data/part2_results.json";
+import { compareModelSizeDesc, withModelSize } from "./modelSizes";
 
 const historicalRunModules = import.meta.glob("../data/historical_runs/*.json", { eager: true });
 const historicalRuns = Object.values(historicalRunModules).map((module) => module.default ?? module);
 
-export const combinedLeaderboard = combinedLeaderboardData;
+export const combinedLeaderboard = combinedLeaderboardData.map(withModelSize);
 export const results = part2ResultsData;
 export const historicalModelDates = historicalModelDatesData;
 export const questionNumbers = Array.from({ length: 99 }, (_, index) => index + 2);
@@ -83,6 +84,9 @@ export function buildMatrixRows(sortMatrix, leaderboard = combinedLeaderboard, r
 }
 
 export function compareMatrixRows(a, b, sortMatrix) {
+  if (sortMatrix === "model_size") {
+    return compareModelSizeDesc(a.summary, b.summary);
+  }
   if (sortMatrix === "release_date") {
     const bDate = Date.parse(b.releaseDate || "");
     const aDate = Date.parse(a.releaseDate || "");

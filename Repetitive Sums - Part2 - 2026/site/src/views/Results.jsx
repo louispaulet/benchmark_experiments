@@ -32,8 +32,9 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
         </label>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-6">
         <Metric label="Accuracy" value={summary ? pct(summary.avg_accuracy) : "0%"} />
+        <Metric label="Model Size" value={summary?.model_size_label ?? "n/a"} />
         <Metric label="Correct" value={hasRows ? rows.filter((row) => row.is_correct).length : "n/a"} />
         <Metric label="Wrong" value={hasRows ? failures.length : "n/a"} />
         <Metric label="Longest Streak" value={streak(summary?.longest_correct_streak)} />

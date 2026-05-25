@@ -19,6 +19,7 @@ import Results from "./views/Results";
 export default function App() {
   const navigate = useNavigate();
   const [selectedModel, setSelectedModel] = useState(combinedLeaderboard[0]?.model_name ?? "");
+  const [sortLeaderboard, setSortLeaderboard] = useState("accuracy");
   const [sortMatrix, setSortMatrix] = useState("accuracy");
   const [sortHistory, setSortHistory] = useState("accuracy");
   const matrixRows = useMemo(() => buildMatrixRows(sortMatrix), [sortMatrix]);
@@ -44,13 +45,25 @@ export default function App() {
               <Home
                 selectedModel={selectedModel}
                 openModel={openModel}
+                sortLeaderboard={sortLeaderboard}
+                setSortLeaderboard={setSortLeaderboard}
                 rows={matrixRows}
                 sortMatrix={sortMatrix}
                 setSortMatrix={setSortMatrix}
               />
             }
           />
-          <Route path="/leaderboard" element={<Leaderboard selectedModel={selectedModel} openModel={openModel} />} />
+          <Route
+            path="/leaderboard"
+            element={
+              <Leaderboard
+                selectedModel={selectedModel}
+                openModel={openModel}
+                sortLeaderboard={sortLeaderboard}
+                setSortLeaderboard={setSortLeaderboard}
+              />
+            }
+          />
           <Route
             path="/results"
             element={

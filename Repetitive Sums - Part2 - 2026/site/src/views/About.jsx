@@ -58,6 +58,7 @@ export default function About() {
         <h3 className="text-base font-semibold">Metrics Shown</h3>
         <div className="mt-3 grid gap-3 text-sm leading-6 text-slate-600 sm:grid-cols-2">
           <p>Accuracy is the percent of rows where the parsed integer answer equals the expected count of ones.</p>
+          <p>Model size is parsed from open model names when available; closed frontier model sizes are approximate estimates.</p>
           <p>Error metrics are computed from absolute answer distance for wrong, parseable answers.</p>
           <p>Longest streak is the longest consecutive run of correct answers when results are ordered from 2 through 100.</p>
           <p>Parsing failures count rows where no integer answer could be extracted; summary-only rows show unavailable row-level metrics as n/a.</p>

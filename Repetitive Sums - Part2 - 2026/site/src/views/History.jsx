@@ -1,10 +1,12 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
 import { dateValue, formatNumber, pct, streak } from "../lib/format";
+import { compareModelSizeDesc } from "../lib/modelSizes";
 
 export function sortHistoryRows(rows, sortHistory) {
   return [...rows].sort((a, b) => {
     if (sortHistory === "accuracy") return b.avg_accuracy - a.avg_accuracy;
+    if (sortHistory === "model_size") return compareModelSizeDesc(a, b);
     if (sortHistory === "error") return a.error_mean - b.error_mean;
     if (sortHistory === "streak") return (b.longest_correct_streak ?? -1) - (a.longest_correct_streak ?? -1);
     if (sortHistory === "test_date") return dateValue(b.test_date).localeCompare(dateValue(a.test_date));
@@ -31,6 +33,7 @@ export default function History({ rows, sortHistory, setSortHistory }) {
             className="rounded-md border border-slate-300 bg-white px-3 py-2"
           >
             <option value="accuracy">Accuracy</option>
+            <option value="model_size">Model size</option>
             <option value="streak">Longest streak</option>
             <option value="test_date">Test date</option>
             <option value="release_date">Release date</option>
@@ -45,6 +48,7 @@ export default function History({ rows, sortHistory, setSortHistory }) {
             <thead className="bg-slate-50 text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-4 py-3">Model</th>
+                <th className="px-4 py-3">Size</th>
                 <th className="px-4 py-3">Test Date</th>
                 <th className="px-4 py-3">Release Date</th>
                 <th className="px-4 py-3">Accuracy</th>
@@ -60,6 +64,7 @@ export default function History({ rows, sortHistory, setSortHistory }) {
               {sorted.map((row) => (
                 <tr key={row.model_name}>
                   <td className="px-4 py-3 font-medium" title={row.date_source || ""}>{row.model_name}</td>
+                  <td className="px-4 py-3" title={row.model_size_note}>{row.model_size_label}</td>
                   <td className="px-4 py-3">{dateValue(row.test_date)}</td>
                   <td className="px-4 py-3">{dateValue(row.release_date)}</td>
                   <td className="px-4 py-3">{pct(row.avg_accuracy)}</td>
