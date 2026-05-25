@@ -31,6 +31,10 @@ describe("App", () => {
 
     expect(screen.getByRole("heading", { name: "Repetitive Sums Benchmark" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /leaderboard/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /louispaulet\/benchmark_experiments/i })).toHaveAttribute(
+      "href",
+      "https://github.com/louispaulet/benchmark_experiments",
+    );
     expect(screen.getByRole("heading", { name: "Combined Leaderboard" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Accuracy Spread" })).toBeInTheDocument();
   });

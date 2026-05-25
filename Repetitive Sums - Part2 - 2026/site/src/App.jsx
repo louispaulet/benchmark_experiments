@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import AppFooter from "./components/AppFooter";
 import AppHeader from "./components/AppHeader";
 import {
   allResults,
@@ -31,10 +32,10 @@ export default function App() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f6f8f5] text-ink">
+    <main className="flex min-h-screen flex-col bg-[#f6f8f5] text-ink">
       <AppHeader modelCount={combinedLeaderboard.length} rowCount={allResults.length} bestAccuracy={bestAccuracy} />
 
-      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <section className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
         <Routes>
           <Route path="/" element={<Leaderboard selectedModel={selectedModel} openModel={openModel} />} />
           <Route
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </section>
+      <AppFooter />
     </main>
   );
 }
