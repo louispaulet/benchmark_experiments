@@ -393,6 +393,7 @@ function Matrix({ rows, sortMatrix, setSortMatrix }) {
   const modelCount = rows.length;
   const cellsPerModel = questionNumbers.length;
   const matrixTemplateColumns = `minmax(9.5rem, 18rem) repeat(${cellsPerModel}, minmax(0, 1fr))`;
+  const axisLabels = [2, 25, 50, 75, 100];
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -437,12 +438,16 @@ function Matrix({ rows, sortMatrix, setSortMatrix }) {
             <div className="matrix-model-header" role="columnheader">
               Model
             </div>
-            <div className="matrix-axis" style={{ gridColumn: `span ${cellsPerModel}` }} role="columnheader">
-              <span style={{ left: "0%" }}>2</span>
-              <span style={{ left: "23.5%" }}>25</span>
-              <span style={{ left: "49%" }}>50</span>
-              <span style={{ left: "74.5%" }}>75</span>
-              <span style={{ left: "100%" }}>100</span>
+            <div
+              className="matrix-axis"
+              style={{ gridColumn: `span ${cellsPerModel}`, gridTemplateColumns: `repeat(${cellsPerModel}, minmax(0, 1fr))` }}
+              role="columnheader"
+            >
+              {axisLabels.map((label) => (
+                <span key={label} className="matrix-axis-label" style={{ gridColumn: String(label - 1) }}>
+                  {label}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -472,10 +477,10 @@ function Matrix({ rows, sortMatrix, setSortMatrix }) {
                         ? "matrix-dot-wrong"
                         : "matrix-dot-missing";
                   const tooltip = result
-                    ? `${row.summary.model_name} · ${result.sum} = ${result.expected} · ${result.is_correct ? "correct" : "wrong"}${result.raw_text ? ` · answer ${result.raw_text}` : ""}`
-                    : `${row.summary.model_name} · ${question} · missing result`;
+                    ? `${row.summary.model_name} · Expected result: ${result.expected} · ${result.is_correct ? "Correct" : "Wrong"}${result.raw_text ? ` · Answer: ${result.raw_text}` : ""}`
+                    : `${row.summary.model_name} · Expected result: ${question} · Missing result`;
                   return (
-                    <div key={question} className="matrix-dot-cell" role="cell">
+                    <div key={question} className="matrix-dot-cell" title={tooltip} aria-label={tooltip} role="cell">
                       <span title={tooltip} aria-label={tooltip} className={`matrix-dot ${swatchClass}`} />
                     </div>
                   );

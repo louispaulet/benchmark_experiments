@@ -96,28 +96,28 @@ select {
 }
 
 .matrix-axis {
-  position: relative;
+  display: grid;
+  align-items: center;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
-.matrix-axis span {
-  position: absolute;
-  top: 50%;
+.matrix-axis-label {
+  min-width: max-content;
   font-size: 0.58rem;
   font-weight: 700;
   line-height: 1;
   color: rgb(100 116 139);
-  transform: translate(-50%, -50%);
+  justify-self: center;
   white-space: nowrap;
 }
 
-.matrix-axis span:first-child {
-  transform: translate(0, -50%);
+.matrix-axis-label:first-child {
+  justify-self: start;
 }
 
-.matrix-axis span:last-child {
-  transform: translate(-100%, -50%);
+.matrix-axis-label:last-child {
+  justify-self: end;
 }
 
 .matrix-dot-cell {
@@ -128,9 +128,9 @@ select {
 
 .matrix-dot {
   display: block;
-  width: clamp(2px, 58%, 7px);
+  width: min(7px, calc(100% - 2px));
   aspect-ratio: 1;
-  border-radius: 999px;
+  border-radius: 1px;
   box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
 }
 
@@ -165,6 +165,6 @@ select {
   }
 
   .matrix-dot {
-    width: clamp(1.5px, 70%, 4px);
+    width: min(4px, calc(100% - 1px));
   }
 }
