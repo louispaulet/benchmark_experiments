@@ -17,9 +17,13 @@ import Leaderboard from "./views/Leaderboard";
 import Matrix from "./views/Matrix";
 import Results from "./views/Results";
 
+const featuredModelName = "gpt-5.5";
+
 export default function App() {
   const navigate = useNavigate();
-  const [selectedModel, setSelectedModel] = useState(combinedLeaderboard[0]?.model_name ?? "");
+  const [selectedModel, setSelectedModel] = useState(
+    combinedLeaderboard.find((row) => row.model_name === featuredModelName)?.model_name ?? combinedLeaderboard[0]?.model_name ?? "",
+  );
   const [sortLeaderboard, setSortLeaderboard] = useState("accuracy");
   const [sortMatrix, setSortMatrix] = useState("accuracy");
   const [sortHistory, setSortHistory] = useState("accuracy");

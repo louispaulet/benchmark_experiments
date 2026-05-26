@@ -99,7 +99,8 @@ describe("App", () => {
     renderApp("/results");
 
     expect(screen.getByText("Model Size")).toBeInTheDocument();
-    expect(screen.getByText("~1.8T")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Model selector" })).toHaveValue("gpt-5.5");
+    expect(screen.getByText("~2.2T")).toBeInTheDocument();
   });
 
   it("renders historical result messaging for archived detail rows", async () => {
