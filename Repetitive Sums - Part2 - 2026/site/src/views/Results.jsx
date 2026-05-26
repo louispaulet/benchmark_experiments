@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { CheckCircle2, ListFilter, XCircle } from "lucide-react";
+import PageHeader from "../components/PageHeader";
+import Panel from "../components/Panel";
 import RangeBands from "../components/RangeBands";
 import StatPanel from "../components/StatPanel";
 import {
@@ -26,27 +28,27 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Model Results</h2>
-          <p className="text-sm text-slate-600">{selectedModel}</p>
-        </div>
-        <label className="inline-flex items-center gap-2 text-sm">
-          <ListFilter size={18} className="text-steel" />
-          <select
-            value={selectedModel}
-            onChange={(event) => setSelectedModel(event.target.value)}
-            className="rounded-md border border-slate-300 bg-white px-3 py-2"
-            aria-label="Model selector"
-          >
-            {combinedLeaderboard.map((row) => (
-              <option key={row.model_name} value={row.model_name}>
-                {row.model_name}{row.has_detail ? "" : " (summary only)"}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      <PageHeader
+        title="Model Results"
+        description={selectedModel}
+        action={
+          <label className="control-with-icon">
+            <ListFilter size={18} className="text-steel" />
+            <select
+              value={selectedModel}
+              onChange={(event) => setSelectedModel(event.target.value)}
+              className="control-select max-w-full sm:w-72"
+              aria-label="Model selector"
+            >
+              {combinedLeaderboard.map((row) => (
+                <option key={row.model_name} value={row.model_name}>
+                  {row.model_name}{row.has_detail ? "" : " (summary only)"}
+                </option>
+              ))}
+            </select>
+          </label>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <StatPanel label="Accuracy" value={summary ? pct(summary.avg_accuracy) : "0%"} />
@@ -58,8 +60,7 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
       </div>
 
       {summary && (
-        <section className="rounded-md border border-slate-200 bg-white p-4">
-          <h3 className="text-base font-semibold">{benchmarkLabel(summary.benchmark)}</h3>
+        <Panel title={benchmarkLabel(summary.benchmark)}>
           <p className="mt-2 text-sm leading-6 text-slate-600">
             {hasRows
               ? isHistorical
@@ -67,28 +68,24 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
                 : "Detailed row-level answers include Responses API token logprobs and top token alternatives."
               : "Only the historical leaderboard summary is available for this model."}
           </p>
-        </section>
+        </Panel>
       )}
 
       {hasRows && (
-        <section className="rounded-md border border-slate-200 bg-white p-4">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h3 className="text-base font-semibold">Range Breakdown</h3>
-              <p className="text-sm text-slate-600">Correctness grouped into answer ranges.</p>
-            </div>
-            <span className="text-sm text-slate-600">Longest miss run: {performance.longestMissRun ? `${performance.longestMissRun.start}-${performance.longestMissRun.end}` : "none"}</span>
-          </div>
+        <Panel
+          title="Range Breakdown"
+          description="Correctness grouped into answer ranges."
+          action={<span className="count-pill">Longest miss run: {performance.longestMissRun ? `${performance.longestMissRun.start}-${performance.longestMissRun.end}` : "none"}</span>}
+        >
           <div className="mt-4">
             <RangeBands ranges={performance.ranges} />
           </div>
-        </section>
+        </Panel>
       )}
 
       {hasRows && (
         <section className="grid gap-4 lg:grid-cols-3">
-          <div className="rounded-md border border-slate-200 bg-white p-4">
-            <h3 className="text-base font-semibold">Failure Clusters</h3>
+          <Panel title="Failure Clusters">
             <div className="mt-3 space-y-2 text-sm text-slate-600">
               {performance.failureClusters.length ? (
                 performance.failureClusters.slice(0, 5).map((cluster) => (
@@ -101,9 +98,8 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
                 <p>No misses in row-level detail.</p>
               )}
             </div>
-          </div>
-          <div className="rounded-md border border-slate-200 bg-white p-4">
-            <h3 className="text-base font-semibold">Latency</h3>
+          </Panel>
+          <Panel title="Latency">
             <div className="mt-3 space-y-2 text-sm text-slate-600">
               {latency ? (
                 <>
@@ -115,9 +111,8 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
                 <p>Latency is unavailable for this benchmark source.</p>
               )}
             </div>
-          </div>
-          <div className="rounded-md border border-slate-200 bg-white p-4">
-            <h3 className="text-base font-semibold">Logprob Confidence</h3>
+          </Panel>
+          <Panel title="Logprob Confidence">
             <div className="mt-3 space-y-2 text-sm text-slate-600">
               {confidence ? (
                 <>
@@ -129,13 +124,12 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
                 <p>Token confidence is unavailable for this benchmark source.</p>
               )}
             </div>
-          </div>
+          </Panel>
         </section>
       )}
 
       {hasRows && (
-        <section className="rounded-md border border-slate-200 bg-white p-4">
-          <h3 className="text-base font-semibold">Correctness By Expected Result</h3>
+        <Panel title="Correctness By Expected Result">
           <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(2.25rem,1fr))] gap-1">
             {rows.map((row) => (
               <div
@@ -149,57 +143,59 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
               </div>
             ))}
           </div>
-        </section>
+        </Panel>
       )}
 
       {hasRows && (
-        <section className="overflow-hidden rounded-md border border-slate-200 bg-white">
-          <div className="flex flex-col gap-3 border-b border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="text-base font-semibold">{isHistorical ? "Row-Level Historical Results" : "Row-Level Logprob Results"}</h3>
+        <Panel
+          className="overflow-hidden p-0"
+          title={isHistorical ? "Row-Level Historical Results" : "Row-Level Logprob Results"}
+          action={
             <select
               value={rowFilter}
               onChange={(event) => setRowFilter(event.target.value)}
-              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+              className="control-select"
               aria-label="Row filter"
             >
               <option value="all">All rows</option>
               <option value="miss">Misses only</option>
               <option value="correct">Correct only</option>
             </select>
-          </div>
+          }
+        >
           <div className="max-h-[620px] overflow-auto">
-            <table className="min-w-full text-left text-sm" aria-label="Row-level results">
-              <thead className="sticky top-0 bg-slate-50 text-xs uppercase text-slate-500">
+            <table className="data-table" aria-label="Row-level results">
+              <thead className="sticky top-0">
                 <tr>
-                  <th className="px-4 py-3">Expected</th>
-                  <th className="px-4 py-3">Answer</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Token Logprobs</th>
-                  <th className="px-4 py-3">Top Token</th>
-                  <th className="px-4 py-3">Latency</th>
+                  <th>Expected</th>
+                  <th>Answer</th>
+                  <th>Status</th>
+                  <th>Token Logprobs</th>
+                  <th>Top Token</th>
+                  <th>Latency</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody>
                 {visibleRows.map((row) => (
                   <tr key={`${row.model}-${row.expected}`}>
-                    <td className="px-4 py-3">{row.expected}</td>
-                    <td className="px-4 py-3 font-medium">{row.raw_text}</td>
-                    <td className="px-4 py-3">
+                    <td>{row.expected}</td>
+                    <td className="font-medium">{row.raw_text}</td>
+                    <td>
                       {row.is_correct ? (
                         <span className="inline-flex items-center gap-1 text-[#2d6a32]"><CheckCircle2 size={16} /> Correct</span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-coral"><XCircle size={16} /> Miss</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs">{row.token_logprobs.length ? row.token_logprobs.map((value) => formatNumber(value)).join(", ") : "n/a"}</td>
-                    <td className="px-4 py-3 font-mono text-xs">{topTokenLabel(row)}</td>
-                    <td className="px-4 py-3">{row.latency_ms === null ? "n/a" : `${formatNumber(row.latency_ms)} ms`}</td>
+                    <td className="font-mono text-xs">{row.token_logprobs.length ? row.token_logprobs.map((value) => formatNumber(value)).join(", ") : "n/a"}</td>
+                    <td className="font-mono text-xs">{topTokenLabel(row)}</td>
+                    <td>{row.latency_ms === null ? "n/a" : `${formatNumber(row.latency_ms)} ms`}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </section>
+        </Panel>
       )}
     </div>
   );

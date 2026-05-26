@@ -2,6 +2,8 @@ import React from "react";
 import BarList from "../components/BarList";
 import DistributionStrip from "../components/DistributionStrip";
 import MiniTrend from "../components/MiniTrend";
+import PageHeader from "../components/PageHeader";
+import Panel from "../components/Panel";
 import RangeBands from "../components/RangeBands";
 import StatPanel from "../components/StatPanel";
 import {
@@ -37,12 +39,10 @@ export default function Insights() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold">Benchmark Insights</h2>
-        <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">
-          Aggregate patterns across model accuracy, answer difficulty, row-level confidence, latency, and historical coverage.
-        </p>
-      </div>
+      <PageHeader
+        title="Benchmark Insights"
+        description="Aggregate accuracy, difficulty, confidence, latency, and historical coverage."
+      />
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatPanel label="Mean Accuracy" value={pct(stats.meanAccuracy)} detail="All leaderboard rows" />
@@ -52,39 +52,33 @@ export default function Insights() {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-md border border-slate-200 bg-white p-4">
-          <h3 className="text-base font-semibold">Hardest Expected Answers</h3>
+        <Panel title="Hardest Expected Answers">
           <div className="mt-4">
             <BarList items={hardest} valueKey="accuracy" suffix="%" maxValue={100} tone="coral" />
           </div>
-        </div>
-        <div className="rounded-md border border-slate-200 bg-white p-4">
-          <h3 className="text-base font-semibold">Easiest Expected Answers</h3>
+        </Panel>
+        <Panel title="Easiest Expected Answers">
           <div className="mt-4">
             <BarList items={easiest} valueKey="accuracy" suffix="%" maxValue={100} />
           </div>
-        </div>
+        </Panel>
       </section>
 
-      <section className="rounded-md border border-slate-200 bg-white p-4">
-        <h3 className="text-base font-semibold">Accuracy Distribution</h3>
+      <Panel title="Accuracy Distribution">
         <div className="mt-4">
           <DistributionStrip buckets={distribution} />
         </div>
-      </section>
+      </Panel>
 
-      <section className="rounded-md border border-slate-200 bg-white p-4">
-        <h3 className="text-base font-semibold">Range Difficulty</h3>
-        <p className="mt-1 text-sm text-slate-600">Correctness grouped by expected-answer ranges.</p>
+      <Panel title="Range Difficulty" description="Correctness grouped by expected-answer ranges.">
         <div className="mt-4">
           <RangeBands ranges={rangeDifficulty()} />
         </div>
-      </section>
+      </Panel>
 
       <section className="grid gap-4 lg:grid-cols-3">
         {detailed.map(({ summary, latency, confidence, performance }) => (
-          <div key={summary.model_name} className="rounded-md border border-slate-200 bg-white p-4">
-            <h3 className="text-base font-semibold">{summary.model_name}</h3>
+          <Panel key={summary.model_name} title={<span title={summary.model_name} className="block truncate">{summary.model_name}</span>}>
             <div className="mt-3 grid gap-3 text-sm text-slate-600">
               <div className="flex justify-between gap-3"><span>Latency median</span><span className="font-medium text-ink">{latency ? `${formatNumber(latency.median)} ms` : "n/a"}</span></div>
               <div className="flex justify-between gap-3"><span>Latency p95</span><span className="font-medium text-ink">{latency ? `${formatNumber(latency.p95)} ms` : "n/a"}</span></div>
@@ -93,18 +87,17 @@ export default function Insights() {
             <div className="mt-4">
               <MiniTrend points={performance.ranges.map((range) => range.accuracy ?? 0)} />
             </div>
-          </div>
+          </Panel>
         ))}
       </section>
 
-      <section className="rounded-md border border-slate-200 bg-white p-4">
-        <h3 className="text-base font-semibold">Archive Comparison</h3>
+      <Panel title="Archive Comparison">
         <div className="mt-3 grid gap-3 text-sm text-slate-600 sm:grid-cols-3">
           <p><span className="font-semibold text-ink">{detailedCount}</span> detailed current benchmark rows are shown with latency and confidence.</p>
           <p><span className="font-semibold text-ink">{archiveCount}</span> archived benchmark rows preserve the historical leaderboard context.</p>
           <p><span className="font-semibold text-ink">{formatNumber(stats.rowCount)}</span> row-level records feed matrix and difficulty stats.</p>
         </div>
-      </section>
+      </Panel>
     </div>
   );
 }

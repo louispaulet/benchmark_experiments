@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import LegendSwatch from "../components/LegendSwatch";
+import PageHeader from "../components/PageHeader";
+import Panel from "../components/Panel";
 import { questionNumbers } from "../lib/benchmarkData";
 import { displayDate, pct } from "../lib/format";
 
@@ -13,29 +15,27 @@ export default function Matrix({ rows, sortMatrix, setSortMatrix, compact = fals
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Dot Matrix</h2>
-          <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">
-            Green tiles are correct answers and red tiles are wrong answers. The matrix merges every benchmark result with available row-level detail, one row per model and one column per expected answer from 2 to 100.
-          </p>
-        </div>
-        <label className="inline-flex items-center gap-2 text-sm">
-          <ChevronDown size={18} className="text-steel" />
-          <select
-            value={sortMatrix}
-            onChange={(event) => setSortMatrix(event.target.value)}
-            className="rounded-md border border-slate-300 bg-white px-3 py-2"
-          >
-            <option value="accuracy">Accuracy</option>
-            <option value="model_size">Model size</option>
-            <option value="release_date">Model release date</option>
-            <option value="streak">Longest streak</option>
-          </select>
-        </label>
-      </div>
+      <PageHeader
+        title="Dot Matrix"
+        description="One row per model, one column per expected answer from 2 to 100."
+        action={
+          <label className="control-with-icon">
+            <ChevronDown size={18} className="text-steel" />
+            <select
+              value={sortMatrix}
+              onChange={(event) => setSortMatrix(event.target.value)}
+              className="control-select"
+            >
+              <option value="accuracy">Accuracy</option>
+              <option value="model_size">Model size</option>
+              <option value="release_date">Model release date</option>
+              <option value="streak">Longest streak</option>
+            </select>
+          </label>
+        }
+      />
 
-      <section className="rounded-md border border-slate-200 bg-white">
+      <Panel className="overflow-hidden p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
           <div className="text-sm text-slate-600">
             {modelCount} models · {cellsPerModel} questions per model
@@ -127,7 +127,7 @@ export default function Matrix({ rows, sortMatrix, setSortMatrix, compact = fals
             ))}
           </div>
         </div>
-      </section>
+      </Panel>
     </div>
   );
 }

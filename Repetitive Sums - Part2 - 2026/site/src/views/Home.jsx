@@ -1,5 +1,7 @@
 import React from "react";
 import BarList from "../components/BarList";
+import PageHeader from "../components/PageHeader";
+import Panel from "../components/Panel";
 import RangeBands from "../components/RangeBands";
 import StatPanel from "../components/StatPanel";
 import {
@@ -41,12 +43,10 @@ export default function Home({ selectedModel, openModel, sortLeaderboard, setSor
   return (
     <div className="space-y-8">
       <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold">Benchmark Dashboard</h2>
-          <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">
-            A dense readout of model accuracy, brittle answer ranges, row-level detail coverage, and current leaderboard leaders.
-          </p>
-        </div>
+        <PageHeader
+          title="Benchmark Dashboard"
+          description="Model accuracy, brittle ranges, row-level coverage, and current leaders in one scan."
+        />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatPanel label="Mean Accuracy" value={pct(stats.meanAccuracy)} detail={`${stats.modelCount} ranked models`} />
           <StatPanel label="Median Accuracy" value={pct(stats.medianAccuracy)} detail={`${stats.perfectModelCount} perfect models`} />
@@ -54,37 +54,30 @@ export default function Home({ selectedModel, openModel, sortLeaderboard, setSor
           <StatPanel label="Rows Analyzed" value={formatNumber(stats.rowCount)} detail={`${stats.archiveModelCount} archive models`} />
         </div>
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr_1.2fr]">
-          <section className="rounded-md border border-slate-200 bg-white p-4">
-            <h3 className="text-base font-semibold">Top Models</h3>
+          <Panel title="Top Models">
             <div className="mt-4">
               <BarList items={topModels} valueKey="accuracy" suffix="%" maxValue={100} />
             </div>
-          </section>
-          <section className="rounded-md border border-slate-200 bg-white p-4">
-            <h3 className="text-base font-semibold">Hardest Sums</h3>
+          </Panel>
+          <Panel title="Hardest Sums">
             <div className="mt-4">
               <BarList items={hardest} valueKey="accuracy" suffix="%" maxValue={100} tone="coral" />
             </div>
-          </section>
-          <section className="rounded-md border border-slate-200 bg-white p-4">
-            <h3 className="text-base font-semibold">Answer Range Accuracy</h3>
-            <p className="mt-1 text-sm text-slate-600">Average correctness across all models with row-level detail.</p>
+          </Panel>
+          <Panel title="Answer Range Accuracy" description="Average correctness across all row-level detail.">
             <div className="mt-4">
               <RangeBands ranges={averageDifficulty} />
             </div>
-          </section>
+          </Panel>
         </div>
         {modelPerformance && (
-          <section className="rounded-md border border-slate-200 bg-white p-4">
-            <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h3 className="text-base font-semibold">Selected Model Range Profile</h3>
-                <p className="text-sm text-slate-600">{modelPerformance.summary.model_name}</p>
-              </div>
-              <span className="text-sm text-slate-600">First miss: {modelPerformance.firstMiss ?? "none"}</span>
-            </div>
+          <Panel
+            title="Selected Model Range Profile"
+            description={modelPerformance.summary.model_name}
+            action={<span className="count-pill">First miss: {modelPerformance.firstMiss ?? "none"}</span>}
+          >
             <RangeBands ranges={modelPerformance.ranges} />
-          </section>
+          </Panel>
         )}
       </section>
       <Matrix rows={rows.slice(0, 12)} sortMatrix={sortMatrix} setSortMatrix={setSortMatrix} compact />

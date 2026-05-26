@@ -1,5 +1,7 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
+import PageHeader from "../components/PageHeader";
+import Panel from "../components/Panel";
 import { dateValue, formatNumber, pct, streak } from "../lib/format";
 import { compareModelSizeDesc } from "../lib/modelSizes";
 
@@ -20,66 +22,66 @@ export default function History({ rows, sortHistory, setSortHistory }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Previous Benchmarks</h2>
-          <p className="text-sm text-slate-600">Extracted from the original benchmark README and included alongside current detailed runs.</p>
-        </div>
-        <label className="inline-flex items-center gap-2 text-sm">
-          <ChevronDown size={18} className="text-steel" />
-          <select
-            value={sortHistory}
-            onChange={(event) => setSortHistory(event.target.value)}
-            className="rounded-md border border-slate-300 bg-white px-3 py-2"
-          >
-            <option value="accuracy">Accuracy</option>
-            <option value="model_size">Model size</option>
-            <option value="streak">Longest streak</option>
-            <option value="test_date">Test date</option>
-            <option value="release_date">Release date</option>
-            <option value="error">Mean error</option>
-            <option value="model">Model</option>
-          </select>
-        </label>
-      </div>
-      <section className="overflow-hidden rounded-md border border-slate-200 bg-white">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm" aria-label="Previous benchmarks">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+      <PageHeader
+        title="Previous Benchmarks"
+        description="Original archive rows, sortable alongside current detailed runs."
+        action={
+          <label className="control-with-icon">
+            <ChevronDown size={18} className="text-steel" />
+            <select
+              value={sortHistory}
+              onChange={(event) => setSortHistory(event.target.value)}
+              className="control-select"
+            >
+              <option value="accuracy">Accuracy</option>
+              <option value="model_size">Model size</option>
+              <option value="streak">Longest streak</option>
+              <option value="test_date">Test date</option>
+              <option value="release_date">Release date</option>
+              <option value="error">Mean error</option>
+              <option value="model">Model</option>
+            </select>
+          </label>
+        }
+      />
+      <Panel className="overflow-hidden p-0">
+        <div className="table-scroll">
+          <table className="data-table" aria-label="Previous benchmarks">
+            <thead>
               <tr>
-                <th className="px-4 py-3">Model</th>
-                <th className="px-4 py-3">Size</th>
-                <th className="px-4 py-3">Test Date</th>
-                <th className="px-4 py-3">Release Date</th>
-                <th className="px-4 py-3">Accuracy</th>
-                <th className="px-4 py-3">Mean Error</th>
-                <th className="px-4 py-3">Longest Streak</th>
-                <th className="px-4 py-3">Median Error</th>
-                <th className="px-4 py-3">Max Error</th>
-                <th className="px-4 py-3">Failures</th>
-                <th className="px-4 py-3">Detail</th>
+                <th>Model</th>
+                <th>Size</th>
+                <th>Test Date</th>
+                <th>Release Date</th>
+                <th>Accuracy</th>
+                <th>Mean Error</th>
+                <th>Longest Streak</th>
+                <th>Median Error</th>
+                <th>Max Error</th>
+                <th>Failures</th>
+                <th>Detail</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody>
               {sorted.map((row) => (
                 <tr key={row.model_name}>
-                  <td className="px-4 py-3 font-medium" title={row.date_source || ""}>{row.model_name}</td>
-                  <td className="px-4 py-3" title={row.model_size_note}>{row.model_size_label}</td>
-                  <td className="px-4 py-3">{dateValue(row.test_date)}</td>
-                  <td className="px-4 py-3">{dateValue(row.release_date)}</td>
-                  <td className="px-4 py-3">{pct(row.avg_accuracy)}</td>
-                  <td className="px-4 py-3">{formatNumber(row.error_mean)}</td>
-                  <td className="px-4 py-3">{streak(row.longest_correct_streak)}</td>
-                  <td className="px-4 py-3">{formatNumber(row.error_median)}</td>
-                  <td className="px-4 py-3">{row.error_max}</td>
-                  <td className="px-4 py-3">{row.parsing_failure_count}</td>
-                  <td className="px-4 py-3">{row.has_detail ? "rows" : "summary"}</td>
+                  <td className="model-name max-w-64" title={row.date_source || row.model_name}>{row.model_name}</td>
+                  <td title={row.model_size_note}>{row.model_size_label}</td>
+                  <td>{dateValue(row.test_date)}</td>
+                  <td>{dateValue(row.release_date)}</td>
+                  <td>{pct(row.avg_accuracy)}</td>
+                  <td>{formatNumber(row.error_mean)}</td>
+                  <td>{streak(row.longest_correct_streak)}</td>
+                  <td>{formatNumber(row.error_median)}</td>
+                  <td>{row.error_max}</td>
+                  <td>{row.parsing_failure_count}</td>
+                  <td>{row.has_detail ? "rows" : "summary"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </section>
+      </Panel>
     </div>
   );
 }
