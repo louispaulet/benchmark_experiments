@@ -12,6 +12,7 @@ import {
 import About from "./views/About";
 import History from "./views/History";
 import Home from "./views/Home";
+import Insights from "./views/Insights";
 import Leaderboard from "./views/Leaderboard";
 import Matrix from "./views/Matrix";
 import Results from "./views/Results";
@@ -76,6 +77,7 @@ export default function App() {
             }
           />
           <Route path="/matrix" element={<Matrix rows={matrixRows} sortMatrix={sortMatrix} setSortMatrix={setSortMatrix} />} />
+          <Route path="/insights" element={<Insights />} />
           <Route
             path="/history"
             element={<History rows={historyRows} sortHistory={sortHistory} setSortHistory={setSortHistory} />}

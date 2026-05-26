@@ -1,5 +1,5 @@
 import React from "react";
-import { Activity, BarChart3, Database, Home, Info, ListFilter } from "lucide-react";
+import { Activity, BarChart3, Database, Home, Info, ListFilter, TrendingUp } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { pct } from "../lib/format";
 import Metric from "./Metric";
@@ -9,6 +9,7 @@ const tabs = [
   { path: "/leaderboard", label: "Leaderboard", icon: BarChart3 },
   { path: "/results", label: "Results", icon: Activity },
   { path: "/matrix", label: "Matrix", icon: ListFilter },
+  { path: "/insights", label: "Insights", icon: TrendingUp },
   { path: "/history", label: "History", icon: Database },
   { path: "/about", label: "About", icon: Info },
 ];

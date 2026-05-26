@@ -1,7 +1,7 @@
 import React from "react";
 import { HashRouter } from "react-router-dom";
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
 import Results from "./views/Results";
@@ -33,6 +33,7 @@ describe("App", () => {
     expect(screen.getByRole("link", { name: "Repetitive Sums Benchmark" })).toHaveAttribute("href", "#/");
     expect(screen.getByRole("link", { name: /home/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /leaderboard/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /insights/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /louispaulet\/benchmark_experiments/i })).toHaveAttribute(
       "href",
       "https://github.com/louispaulet/benchmark_experiments",
@@ -41,6 +42,8 @@ describe("App", () => {
     const leaderboardHeading = screen.getByRole("heading", { name: "Combined Leaderboard" });
     expect(matrixHeading.compareDocumentPosition(leaderboardHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Accuracy Spread" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Benchmark Dashboard" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Hardest Sums" })).toBeInTheDocument();
   });
 
   it("returns home when the benchmark title is clicked", async () => {
@@ -72,11 +75,24 @@ describe("App", () => {
 
     expect(within(firstBodyRow("Combined leaderboard")).getByText("gpt-5.4")).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByRole("combobox"), "model_size");
+    await user.selectOptions(screen.getByRole("combobox", { name: "Leaderboard sort" }), "model_size");
 
     const firstSizeRow = firstBodyRow("Combined leaderboard");
     expect(within(firstSizeRow).getByText("~2.2T")).toBeInTheDocument();
     expect(within(firstSizeRow).getByText("gpt-5.5")).toBeInTheDocument();
+  });
+
+  it("filters leaderboard rows by search and benchmark type", async () => {
+    const user = userEvent.setup();
+    renderApp("/leaderboard");
+
+    await user.type(screen.getByPlaceholderText("Search models"), "claude");
+    await user.selectOptions(screen.getByRole("combobox", { name: "Benchmark filter" }), "archive");
+
+    expect(screen.getByText("3 models")).toBeInTheDocument();
+    const table = screen.getByRole("table", { name: "Combined leaderboard" });
+    expect(within(table).getByText("claude-3-opus-20240229")).toBeInTheDocument();
+    expect(within(table).queryByText("gpt-5.5")).not.toBeInTheDocument();
   });
 
   it("shows the selected model size in model results", () => {
@@ -90,7 +106,7 @@ describe("App", () => {
     const user = userEvent.setup();
     renderApp("/results");
 
-    await user.selectOptions(screen.getByRole("combobox"), "claude-3-opus-20240229");
+    await user.selectOptions(screen.getByRole("combobox", { name: "Model selector" }), "claude-3-opus-20240229");
 
     expect(screen.getByRole("heading", { name: "Row-Level Historical Results" })).toBeInTheDocument();
     expect(screen.getByText("Historical correctness positions are available for this model from the archived PNG charts. Answers and logprob columns are unavailable for the original runs.")).toBeInTheDocument();
@@ -108,6 +124,18 @@ describe("App", () => {
 
     expect(screen.getByText("Only the historical leaderboard summary is available for this model.")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: /Row-Level/ })).not.toBeInTheDocument();
+  });
+
+  it("filters row-level results by misses", async () => {
+    const user = userEvent.setup();
+    renderApp("/results");
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "Model selector" }), "gpt-5.4-mini");
+    await user.selectOptions(screen.getByRole("combobox", { name: "Row filter" }), "miss");
+
+    const table = screen.getByRole("table", { name: "Row-level results" });
+    expect(within(table).getAllByText("Miss").length).toBeGreaterThan(0);
+    expect(within(table).queryByText("Correct")).not.toBeInTheDocument();
   });
 
   it("renders the matrix and changes ordering when the sort select changes", async () => {
@@ -129,6 +157,25 @@ describe("App", () => {
 
     const firstSizeRow = firstBodyRow("Model correctness dot matrix");
     expect(within(firstSizeRow).getByText("claude-3-opus-20240229")).toBeInTheDocument();
+  });
+
+  it("shows selected matrix cell details", async () => {
+    renderApp("/matrix");
+
+    const cell = document.querySelector('button[aria-label="gpt-5.4 · Expected result: 2 · Correct · Answer: 2"]');
+    fireEvent.click(cell);
+
+    expect(screen.getByText(/Selected:/)).toBeInTheDocument();
+    expect(screen.getByText(/expected 2/)).toBeInTheDocument();
+  });
+
+  it("renders the insights page sections", () => {
+    renderApp("/insights");
+
+    expect(screen.getByRole("heading", { name: "Benchmark Insights" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Hardest Expected Answers" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Accuracy Distribution" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Archive Comparison" })).toBeInTheDocument();
   });
 
   it("sorts history rows by the selected criterion", async () => {

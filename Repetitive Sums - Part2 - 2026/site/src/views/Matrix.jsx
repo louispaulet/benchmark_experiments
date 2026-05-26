@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import LegendSwatch from "../components/LegendSwatch";
 import { questionNumbers } from "../lib/benchmarkData";
 import { displayDate, pct } from "../lib/format";
 
-export default function Matrix({ rows, sortMatrix, setSortMatrix }) {
+export default function Matrix({ rows, sortMatrix, setSortMatrix, compact = false }) {
+  const [selectedCell, setSelectedCell] = useState(null);
   const modelCount = rows.length;
   const cellsPerModel = questionNumbers.length;
   const matrixTemplateColumns = `minmax(9.5rem, 18rem) repeat(${cellsPerModel}, minmax(0, 1fr))`;
@@ -46,7 +47,14 @@ export default function Matrix({ rows, sortMatrix, setSortMatrix }) {
           </div>
         </div>
 
-        <div className="matrix-scroll" data-testid="dot-matrix-scroll">
+        {selectedCell && (
+          <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            <span className="font-semibold text-ink">Selected:</span> {selectedCell.model} · expected {selectedCell.expected} · {selectedCell.status}
+            {selectedCell.answer && <span> · answer {selectedCell.answer}</span>}
+          </div>
+        )}
+
+        <div className={`matrix-scroll ${compact ? "matrix-scroll-compact" : ""}`} data-testid="dot-matrix-scroll">
           <div
             className="matrix-grid matrix-grid-header sticky top-0 z-20"
             style={{ gridTemplateColumns: matrixTemplateColumns }}
@@ -98,7 +106,20 @@ export default function Matrix({ rows, sortMatrix, setSortMatrix }) {
                     : `${row.summary.model_name} · Expected result: ${question} · Missing result`;
                   return (
                     <div key={question} className="matrix-dot-cell" title={tooltip} aria-label={tooltip} role="cell">
-                      <span title={tooltip} aria-label={tooltip} className={`matrix-dot ${swatchClass}`} />
+                      <button
+                        type="button"
+                        title={tooltip}
+                        aria-label={tooltip}
+                        className={`matrix-dot ${swatchClass}`}
+                        onClick={() =>
+                          setSelectedCell({
+                            model: row.summary.model_name,
+                            expected: question,
+                            status: result ? (result.is_correct ? "Correct" : "Wrong") : "Missing result",
+                            answer: result?.raw_text && result.raw_text !== "n/a" ? result.raw_text : "",
+                          })
+                        }
+                      />
                     </div>
                   );
                 })}

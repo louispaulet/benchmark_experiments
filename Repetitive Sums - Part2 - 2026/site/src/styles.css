@@ -23,6 +23,10 @@ select {
   overscroll-behavior: contain;
 }
 
+.matrix-scroll-compact {
+  max-height: min(46vh, 440px);
+}
+
 .matrix-grid {
   display: grid;
   width: 100%;
@@ -130,8 +134,16 @@ select {
   display: block;
   width: min(7px, calc(100% - 2px));
   aspect-ratio: 1;
+  padding: 0;
+  border: 0;
   border-radius: 0;
   box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+}
+
+.matrix-dot:focus-visible {
+  outline: 2px solid #43677a;
+  outline-offset: 1px;
 }
 
 .matrix-dot-correct {

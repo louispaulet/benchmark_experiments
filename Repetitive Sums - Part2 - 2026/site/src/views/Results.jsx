@@ -1,13 +1,28 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { CheckCircle2, ListFilter, XCircle } from "lucide-react";
-import Metric from "../components/Metric";
+import RangeBands from "../components/RangeBands";
+import StatPanel from "../components/StatPanel";
+import {
+  getConfidenceStats,
+  getLatencyStats,
+  getModelPerformance,
+} from "../lib/analytics";
 import { combinedLeaderboard } from "../lib/benchmarkData";
 import { benchmarkLabel, formatNumber, pct, streak, topTokenLabel } from "../lib/format";
 
 export default function Results({ rows, selectedModel, setSelectedModel, summary }) {
+  const [rowFilter, setRowFilter] = useState("all");
   const failures = rows.filter((row) => !row.is_correct);
   const isHistorical = summary?.benchmark?.startsWith("Original");
   const hasRows = rows.length > 0;
+  const performance = useMemo(() => (summary ? getModelPerformance(summary, rows) : null), [summary, rows]);
+  const latency = getLatencyStats(rows);
+  const confidence = getConfidenceStats(rows);
+  const visibleRows = rows.filter((row) => {
+    if (rowFilter === "correct") return row.is_correct;
+    if (rowFilter === "miss") return !row.is_correct;
+    return true;
+  });
 
   return (
     <div className="space-y-6">
@@ -22,6 +37,7 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
             value={selectedModel}
             onChange={(event) => setSelectedModel(event.target.value)}
             className="rounded-md border border-slate-300 bg-white px-3 py-2"
+            aria-label="Model selector"
           >
             {combinedLeaderboard.map((row) => (
               <option key={row.model_name} value={row.model_name}>
@@ -32,13 +48,13 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
         </label>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-6">
-        <Metric label="Accuracy" value={summary ? pct(summary.avg_accuracy) : "0%"} />
-        <Metric label="Model Size" value={summary?.model_size_label ?? "n/a"} />
-        <Metric label="Correct" value={hasRows ? rows.filter((row) => row.is_correct).length : "n/a"} />
-        <Metric label="Wrong" value={hasRows ? failures.length : "n/a"} />
-        <Metric label="Longest Streak" value={streak(summary?.longest_correct_streak)} />
-        <Metric label="Parse Fails" value={summary?.parsing_failure_count ?? 0} />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <StatPanel label="Accuracy" value={summary ? pct(summary.avg_accuracy) : "0%"} />
+        <StatPanel label="Model Size" value={summary?.model_size_label ?? "n/a"} detail={summary?.model_size_note} />
+        <StatPanel label="Correct" value={hasRows ? performance.correct : "n/a"} />
+        <StatPanel label="Wrong" value={hasRows ? failures.length : "n/a"} />
+        <StatPanel label="First Miss" value={hasRows ? performance.firstMiss ?? "none" : "n/a"} />
+        <StatPanel label="Longest Streak" value={streak(summary?.longest_correct_streak)} />
       </div>
 
       {summary && (
@@ -51,6 +67,69 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
                 : "Detailed row-level answers include Responses API token logprobs and top token alternatives."
               : "Only the historical leaderboard summary is available for this model."}
           </p>
+        </section>
+      )}
+
+      {hasRows && (
+        <section className="rounded-md border border-slate-200 bg-white p-4">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h3 className="text-base font-semibold">Range Breakdown</h3>
+              <p className="text-sm text-slate-600">Correctness grouped into answer ranges.</p>
+            </div>
+            <span className="text-sm text-slate-600">Longest miss run: {performance.longestMissRun ? `${performance.longestMissRun.start}-${performance.longestMissRun.end}` : "none"}</span>
+          </div>
+          <div className="mt-4">
+            <RangeBands ranges={performance.ranges} />
+          </div>
+        </section>
+      )}
+
+      {hasRows && (
+        <section className="grid gap-4 lg:grid-cols-3">
+          <div className="rounded-md border border-slate-200 bg-white p-4">
+            <h3 className="text-base font-semibold">Failure Clusters</h3>
+            <div className="mt-3 space-y-2 text-sm text-slate-600">
+              {performance.failureClusters.length ? (
+                performance.failureClusters.slice(0, 5).map((cluster) => (
+                  <div key={`${cluster.start}-${cluster.end}`} className="flex justify-between gap-3 rounded-sm bg-slate-50 px-3 py-2">
+                    <span>{cluster.start === cluster.end ? cluster.start : `${cluster.start}-${cluster.end}`}</span>
+                    <span className="font-medium text-ink">{cluster.count} miss{cluster.count === 1 ? "" : "es"}</span>
+                  </div>
+                ))
+              ) : (
+                <p>No misses in row-level detail.</p>
+              )}
+            </div>
+          </div>
+          <div className="rounded-md border border-slate-200 bg-white p-4">
+            <h3 className="text-base font-semibold">Latency</h3>
+            <div className="mt-3 space-y-2 text-sm text-slate-600">
+              {latency ? (
+                <>
+                  <div className="flex justify-between"><span>Median</span><span className="font-medium text-ink">{formatNumber(latency.median)} ms</span></div>
+                  <div className="flex justify-between"><span>P95</span><span className="font-medium text-ink">{formatNumber(latency.p95)} ms</span></div>
+                  <div className="flex justify-between"><span>Range</span><span className="font-medium text-ink">{formatNumber(latency.min)}-{formatNumber(latency.max)} ms</span></div>
+                </>
+              ) : (
+                <p>Latency is unavailable for this benchmark source.</p>
+              )}
+            </div>
+          </div>
+          <div className="rounded-md border border-slate-200 bg-white p-4">
+            <h3 className="text-base font-semibold">Logprob Confidence</h3>
+            <div className="mt-3 space-y-2 text-sm text-slate-600">
+              {confidence ? (
+                <>
+                  <div className="flex justify-between"><span>Median</span><span className="font-medium text-ink">{pct(confidence.medianProbability)}</span></div>
+                  <div className="flex justify-between"><span>Average</span><span className="font-medium text-ink">{pct(confidence.averageProbability)}</span></div>
+                  <div className="flex justify-between"><span>Lowest</span><span className="font-medium text-ink">{pct(confidence.lowestProbability)}</span></div>
+                </>
+              ) : (
+                <p>Token confidence is unavailable for this benchmark source.</p>
+              )}
+            </div>
+          </div>
         </section>
       )}
 
@@ -75,11 +154,21 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
 
       {hasRows && (
         <section className="overflow-hidden rounded-md border border-slate-200 bg-white">
-          <div className="border-b border-slate-200 px-4 py-3">
+          <div className="flex flex-col gap-3 border-b border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <h3 className="text-base font-semibold">{isHistorical ? "Row-Level Historical Results" : "Row-Level Logprob Results"}</h3>
+            <select
+              value={rowFilter}
+              onChange={(event) => setRowFilter(event.target.value)}
+              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+              aria-label="Row filter"
+            >
+              <option value="all">All rows</option>
+              <option value="miss">Misses only</option>
+              <option value="correct">Correct only</option>
+            </select>
           </div>
           <div className="max-h-[620px] overflow-auto">
-            <table className="min-w-full text-left text-sm">
+            <table className="min-w-full text-left text-sm" aria-label="Row-level results">
               <thead className="sticky top-0 bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
                   <th className="px-4 py-3">Expected</th>
@@ -91,7 +180,7 @@ export default function Results({ rows, selectedModel, setSelectedModel, summary
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {rows.map((row) => (
+                {visibleRows.map((row) => (
                   <tr key={`${row.model}-${row.expected}`}>
                     <td className="px-4 py-3">{row.expected}</td>
                     <td className="px-4 py-3 font-medium">{row.raw_text}</td>
